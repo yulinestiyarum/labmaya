@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Lab Maya Kimia – Larutan Asam Basa</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+:root{
+  --bg:#f0f7ff;--surf:#ffffff;--surf2:#f4f8ff;
+  --border:#d4e0f0;--border2:#b0c4de;
+  --acc:#0369a1;--acc2:#0ea5e9;--acc3:#075985;
+  --text:#1e293b;--text2:#475569;--text3:#94a3b8;
+  --yellow:#d97706;--red:#dc2626;--green:#059669;
+  --h:50px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100vw;height:100vh;overflow:hidden;font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);}
+body{display:flex;flex-direction:column;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 70% 50% at 5% 0%,rgba(3,105,161,0.07) 0%,transparent 60%),radial-gradient(ellipse 50% 60% at 95% 100%,rgba(14,165,233,0.06) 0%,transparent 60%);}
+
+/* LOADING */
+#loadScreen{position:fixed;inset:0;z-index:99999;background:linear-gradient(145deg,#0c1445 0%,#0a2d6e 40%,#0369a1 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s ease;}
+#loadScreen.hide{opacity:0;pointer-events:none;}
+.load-sampul{width:clamp(110px,18vw,200px);margin-bottom:14px;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.4);object-fit:cover;}
+.load-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(20px,3vw,34px);font-weight:800;color:#fff;text-align:center;margin-bottom:3px;}
+.load-sub{font-size:clamp(11px,1.3vw,14px);color:#7dd3fc;letter-spacing:.12em;text-transform:uppercase;text-align:center;margin-bottom:20px;}
+.load-bar-wrap{width:clamp(200px,28vw,340px);height:6px;background:rgba(255,255,255,.15);border-radius:10px;overflow:hidden;margin-bottom:8px;}
+.load-bar-slide{height:100%;width:0%;background:linear-gradient(90deg,#38bdf8,#7dd3fc,#0ea5e9);border-radius:10px;transition:width .08s linear;}
+.load-percent{font-family:'JetBrains Mono',monospace;font-size:14px;color:#fff;font-weight:700;margin-bottom:8px;text-align:center;}
+.load-status{font-size:12px;color:#bfdbfe;margin-bottom:24px;min-height:16px;text-align:center;}
+#btnMulai{display:none;background:linear-gradient(135deg,#0369a1,#0ea5e9);color:#fff;border:none;border-radius:12px;padding:11px 34px;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(14,165,233,.4);transition:transform .18s,box-shadow .18s;touch-action:manipulation;}
+#btnMulai:hover{transform:translateY(-2px) scale(1.03);}
+@keyframes btnPop{from{opacity:0;transform:scale(0.7);}to{opacity:1;transform:scale(1);}}
+
+/* HEADER */
+header{position:relative;z-index:10;height:var(--h);flex-shrink:0;background:linear-gradient(135deg,#0c1445,#0a2d6e,#0369a1);border-bottom:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;padding:0 12px;gap:10px;box-shadow:0 2px 16px rgba(12,20,69,0.5);}
+.logo{display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.logo-icon{width:30px;height:30px;border-radius:7px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.logo-text{font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,1.6vw,18px);font-weight:800;color:#fff;line-height:1;}
+.logo-sub{font-size:8.5px;color:rgba(255,255,255,0.7);}
+nav{display:flex;gap:1px;flex:1;overflow-x:auto;justify-content:flex-end;}
+nav::-webkit-scrollbar{display:none;}
+.nb{position:relative;background:none;border:none;color:rgba(255,255,255,0.7);cursor:pointer;font-family:'Nunito',sans-serif;font-size:clamp(10.5px,1.1vw,12.5px);font-weight:700;padding:0 9px;height:var(--h);white-space:nowrap;transition:color .2s;display:flex;align-items:center;gap:4px;touch-action:manipulation;}
+.nb::after{content:'';position:absolute;bottom:0;left:6px;right:6px;height:3px;background:linear-gradient(90deg,#38bdf8,#7dd3fc);transform:scaleX(0);transition:transform .2s;border-radius:3px 3px 0 0;}
+.nb:hover{color:rgba(255,255,255,.95);}
+.nb.active{color:#fff;}
+.nb.active::after{transform:scaleX(1);}
+
+/* APP */
+#app{position:relative;z-index:1;flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.page{display:none;flex:1;overflow:hidden;flex-direction:column;}
+.page.active{display:flex;animation:fu .22s ease;}
+@keyframes fu{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:translateY(0);}}
+.scroll{flex:1;overflow-y:auto;padding:9px 13px 12px;}
+.scroll::-webkit-scrollbar{width:4px;}
+.scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* CARDS */
+.card{background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:11px 13px;margin-bottom:7px;box-shadow:0 2px 8px rgba(3,105,161,0.07);transition:border-color .2s,box-shadow .2s;}
+.card:hover{border-color:var(--border2);box-shadow:0 4px 14px rgba(3,105,161,0.1);}
+.ch{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.ci{width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.ci.b{background:rgba(3,105,161,0.12);}
+.ci.g{background:rgba(5,150,105,0.1);}
+.ci.r{background:rgba(220,38,38,0.1);}
+.ci.p{background:rgba(124,58,237,0.1);}
+.ci.y{background:rgba(217,119,6,0.1);}
+.ct{font-family:'Space Grotesk',sans-serif;font-size:clamp(12px,1.4vw,14px);font-weight:700;color:var(--acc3);}
+.card p{font-size:clamp(11px,1.1vw,13px);line-height:1.7;color:var(--text2);margin-bottom:5px;}
+.card p:last-child{margin-bottom:0;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;}
+.olist{list-style:none;}
+.olist li{display:flex;align-items:flex-start;gap:7px;font-size:clamp(11px,1.1vw,13px);color:var(--text2);line-height:1.65;padding:4px 0;border-bottom:1px solid var(--border);}
+.olist li:last-child{border-bottom:none;}
+.olist li::before{content:'▸';color:var(--acc2);font-weight:700;font-size:12px;margin-top:2px;}
+
+/* PROSEDUR */
+.proc-tabs{display:flex;gap:5px;margin-bottom:8px;flex-wrap:wrap;flex-shrink:0;}
+.proc-tab{background:var(--surf2);border:1px solid var(--border);border-radius:7px;padding:5px 11px;font-family:'Nunito',sans-serif;font-size:11.5px;font-weight:700;cursor:pointer;transition:all .18s;color:var(--text2);touch-action:manipulation;}
+.proc-tab:hover{border-color:var(--acc2);color:var(--acc);}
+.proc-tab.active{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border-color:var(--acc);box-shadow:0 3px 10px rgba(3,105,161,.25);}
+.proc-content{display:none;}
+.proc-content.active{display:block;}
+.steps{display:flex;flex-direction:column;gap:6px;}
+.step{display:flex;gap:10px;align-items:flex-start;background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:8px 11px;transition:all .18s;}
+.step:hover{border-color:var(--acc2);background:#eff9ff;}
+.snum{min-width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff;font-weight:700;flex-shrink:0;}
+.step p{font-size:clamp(11px,1.1vw,13px);color:var(--text2);line-height:1.65;margin:0;}
+.step-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+.proc-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:8px 12px;border-radius:8px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;}
+.proc-header h3{font-family:'Space Grotesk',sans-serif;font-size:clamp(12px,1.3vw,14px);font-weight:700;}
+.proc-badge{background:rgba(255,255,255,0.2);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;margin-left:auto;}
+
+/* ALAT & BAHAN */
+.ab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px;margin-top:5px;}
+.ab-item{background:var(--surf2);border:1px solid var(--border);border-radius:9px;padding:8px 6px;text-align:center;transition:all .2s;}
+.ab-item:hover{border-color:var(--acc2);box-shadow:0 4px 14px rgba(3,105,161,0.1);transform:translateY(-2px);}
+.ab-item img{width:80px;height:80px;object-fit:contain;margin-bottom:5px;display:block;margin-left:auto;margin-right:auto;}
+.ab-name{font-size:11px;font-weight:700;color:var(--acc3);line-height:1.35;}
+
+/* ===================== SIMULASI ===================== */
+.sim-layout{display:grid;grid-template-columns:148px 1fr;gap:7px;flex:1;min-height:0;}
+.sim-panel{background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:9px;display:flex;flex-direction:column;gap:5px;overflow-y:auto;}
+.sim-panel h3{font-family:'Space Grotesk',sans-serif;font-size:11.5px;font-weight:700;color:var(--acc3);padding-bottom:5px;border-bottom:1px solid var(--border);}
+.exp-btn{background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:6px 8px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:11px;font-weight:700;color:var(--text2);transition:all .18s;text-align:left;display:flex;align-items:center;gap:6px;touch-action:manipulation;width:100%;}
+.exp-btn:hover{border-color:var(--acc2);background:#eff9ff;color:var(--acc);}
+.exp-btn.active{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border-color:var(--acc);}
+.exp-num{width:19px;height:19px;border-radius:50%;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;background:var(--acc2);color:#fff;}
+.exp-btn.active .exp-num{background:rgba(255,255,255,0.3);}
+
+.sim-main{display:flex;flex-direction:column;gap:6px;overflow:hidden;}
+
+/* LAB BENCH */
+.lab-bench{background:linear-gradient(165deg,#0a1628,#0d2150,#0a3a70);border:1px solid rgba(255,255,255,0.1);border-radius:12px;flex:1;position:relative;overflow:hidden;min-height:0;}
+.lab-bench::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 90% 70% at 50% 90%,rgba(14,165,233,0.1) 0%,transparent 70%);pointer-events:none;}
+.bench-floor{position:absolute;bottom:0;left:0;right:0;height:18%;background:linear-gradient(180deg,#1a3a5c,#122840);border-top:2px solid rgba(14,165,233,0.3);}
+.bench-surface-line{position:absolute;bottom:18%;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,rgba(14,165,233,0.5),transparent);box-shadow:0 0 14px rgba(14,165,233,0.35);}
+.bench-lights{position:absolute;top:7px;left:12px;right:12px;display:flex;justify-content:space-between;pointer-events:none;}
+.bench-dot{width:6px;height:6px;border-radius:50%;}
+.bd-blue{background:#38bdf8;box-shadow:0 0 8px #38bdf8;animation:blink 2s ease-in-out infinite;}
+.bd-green{background:#10b981;box-shadow:0 0 8px #10b981;animation:blink 2.5s ease-in-out infinite .5s;}
+.bench-label{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:rgba(255,255,255,0.35);letter-spacing:.1em;}
+
+/* BEAKER - centered & large */
+#beakerWrap{
+  position:absolute;
+  bottom:18%;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;
+  z-index:4;
+}
+#beakerImg{width:clamp(100px,18vw,140px);height:auto;filter:drop-shadow(0 6px 18px rgba(0,0,0,0.5));display:block;position:relative;z-index:4;}
+#beakerLabel{font-size:9px;color:rgba(255,255,255,0.7);margin-top:3px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;}
+
+/* Liquid inside beaker – positioned over beaker image */
+#liquidWrap{
+  position:absolute;
+  bottom:18%;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:3;
+  display:flex;align-items:flex-end;justify-content:center;
+  width:clamp(100px,18vw,140px);
+  height:clamp(100px,18vw,140px);
+  pointer-events:none;
+}
+#liquidFill{
+  width:62%;
+  height:0;
+  background:rgba(180,210,255,0.4);
+  border-radius:0 0 8px 8px;
+  transition:height 1s ease, background .6s ease;
+  position:absolute;
+  bottom:12%;
+  overflow:hidden;
+}
+#liquidWave{
+  position:absolute;
+  top:-6px;left:-8px;right:-8px;height:14px;
+  border-radius:50%;
+  opacity:0.7;
+  animation:wave 1.8s ease-in-out infinite;
+}
+@keyframes wave{0%,100%{transform:translateX(-5%) scaleY(1);}50%{transform:translateX(5%) scaleY(1.4);}}
+
+/* BOTTLE – large, right side */
+#bottleWrap{
+  position:absolute;
+  right:8%;
+  bottom:22%;
+  display:flex;flex-direction:column;align-items:center;
+  transition:all .7s cubic-bezier(.34,1.1,.64,1);
+  z-index:6;
+}
+#bottleCap{width:18px;height:12px;background:#666;border-radius:5px 5px 0 0;margin-bottom:-2px;position:relative;z-index:7;transition:transform .35s ease,opacity .35s ease;}
+#bottleImg{width:clamp(72px,12vw,100px);height:auto;filter:drop-shadow(0 6px 16px rgba(0,0,0,0.55));position:relative;z-index:6;display:block;}
+#bottleLabel{font-size:9px;color:rgba(255,255,255,0.9);margin-top:4px;font-weight:700;text-align:center;background:rgba(0,0,0,0.45);padding:2px 9px;border-radius:5px;}
+
+/* POUR STREAM */
+#pourStream{position:absolute;display:none;width:9px;border-radius:3px 3px 8px 8px;z-index:5;pointer-events:none;}
+@keyframes streamAnim{0%{opacity:0;}15%{opacity:1;}85%{opacity:1;}100%{opacity:0;}}
+
+/* TOOLS – large, on sides */
+.tool-wrap{
+  position:absolute;
+  display:flex;flex-direction:column;align-items:center;
+  transition:all .65s cubic-bezier(.34,1.1,.64,1);
+  z-index:5;cursor:pointer;
+}
+.tool-wrap img{width:clamp(60px,10vw,85px);height:auto;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.45));display:block;}
+.tool-label{font-size:9px;font-weight:800;margin-top:4px;text-align:center;letter-spacing:.05em;padding:2px 7px;border-radius:5px;background:rgba(0,0,0,0.45);}
+/* pH meter khusus lebih besar */
+#phmeter img{width:clamp(80px,14vw,120px);height:auto;}
+
+#lakmusM{left:26%;bottom:28%;}
+#lakmusM .tool-label{color:rgba(255,170,170,0.95);}
+#lakmusB{left:36%;bottom:28%;}
+#lakmusB .tool-label{color:rgba(160,190,255,0.95);}
+#phmeter{right:24%;bottom:28%;}
+#phmeter .tool-label{color:rgba(150,255,210,0.95);}
+
+/* pH READING */
+#phReading{display:none;position:absolute;left:50%;transform:translateX(-50%);top:7%;background:rgba(10,20,50,0.88);border:1px solid rgba(14,165,233,0.45);border-radius:10px;padding:7px 16px;backdrop-filter:blur(8px);text-align:center;z-index:10;}
+#phValue{font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:700;color:#38bdf8;line-height:1;}
+#phLabel{font-size:8.5px;color:#7dd3fc;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;}
+#phType{font-size:11px;font-weight:700;margin-top:3px;}
+
+/* LAKMUS RESULT */
+#lakmusResults{display:none;position:absolute;right:8%;top:7%;background:rgba(10,20,50,0.88);border:1px solid rgba(14,165,233,0.45);border-radius:10px;padding:8px 12px;backdrop-filter:blur(8px);z-index:10;}
+.lr-title{font-size:8.5px;color:#7dd3fc;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;font-weight:700;}
+.lr-row{display:flex;gap:8px;}
+.lr-strip{width:22px;height:46px;border-radius:4px;border:1px solid rgba(255,255,255,0.2);transition:background .5s ease;}
+.lr-sub{font-size:8px;color:rgba(255,255,255,0.6);text-align:center;margin-top:3px;}
+
+/* CONTROLS */
+.sim-controls{flex-shrink:0;background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:9px 12px;}
+.ctrl-title{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;color:var(--acc3);margin-bottom:7px;}
+.ctrl-btns{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.btn-act{border:none;border-radius:8px;padding:7px 13px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:5px;touch-action:manipulation;}
+.btn-pour{background:linear-gradient(135deg,#0369a1,#0ea5e9);color:#fff;box-shadow:0 3px 10px rgba(3,105,161,.3);}
+.btn-pour:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 5px 16px rgba(3,105,161,.4);}
+.btn-pour:disabled{opacity:.38;cursor:not-allowed;}
+.btn-lm{background:linear-gradient(135deg,#b91c1c,#ef4444);color:#fff;}
+.btn-lm:hover:not(:disabled){transform:translateY(-1px);}
+.btn-lm:disabled{opacity:.38;cursor:not-allowed;}
+.btn-lb{background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;}
+.btn-lb:hover:not(:disabled){transform:translateY(-1px);}
+.btn-lb:disabled{opacity:.38;cursor:not-allowed;}
+.btn-ph{background:linear-gradient(135deg,#047857,#10b981);color:#fff;}
+.btn-ph:hover:not(:disabled){transform:translateY(-1px);}
+.btn-ph:disabled{opacity:.38;cursor:not-allowed;}
+.btn-rst{background:var(--surf2);border:1px solid var(--border);color:var(--text2);margin-left:auto;}
+.btn-rst:hover{border-color:var(--acc2);color:var(--acc);background:#eff9ff;}
+
+.result-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px;}
+.result-box{flex:1;min-width:70px;background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:6px 8px;text-align:center;transition:all .3s;}
+.result-box.revealed{animation:popIn .35s cubic-bezier(.34,1.56,.64,1);}
+.result-label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;font-weight:700;}
+.result-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--acc);line-height:1;}
+@keyframes popIn{from{opacity:0;transform:scale(.7);}to{opacity:1;transform:scale(1);}}
+@keyframes blink{0%,100%{opacity:0.7;}50%{opacity:0.2;}}
+
+/* TABEL PENGAMATAN */
+.obs-table{width:100%;border-collapse:collapse;font-size:12px;}
+.obs-table th{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;padding:8px 10px;text-align:left;border:1px solid var(--acc3);font-size:11px;}
+.obs-table td{padding:7px 10px;border:1px solid var(--border);color:var(--text2);}
+.obs-table tr:nth-child(even) td{background:#f8fafc;}
+.obs-table tr:hover td{background:#eff9ff;}
+.btn-pdf{display:flex;align-items:center;gap:7px;border:none;border-radius:9px;padding:9px 18px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;transition:all .18s;}
+.btn-pdf-tabel{background:linear-gradient(135deg,#0369a1,#0ea5e9);color:#fff;box-shadow:0 3px 12px rgba(3,105,161,.3);}
+.btn-pdf-tabel:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(3,105,161,.4);}
+.btn-pdf-disc{background:linear-gradient(135deg,#047857,#10b981);color:#fff;box-shadow:0 3px 12px rgba(5,150,105,.3);}
+.btn-pdf-disc:hover{transform:translateY(-2px);}
+.btn-submit{background:linear-gradient(135deg,#d97706,#f59e0b);color:#fff;box-shadow:0 3px 12px rgba(217,119,6,.3);}
+.btn-submit:hover{transform:translateY(-2px);}
+
+/* DISKUSI */
+.disc-q{background:var(--surf2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;margin-bottom:7px;}
+.disc-q-num{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--acc);letter-spacing:.1em;font-weight:700;margin-bottom:3px;}
+.disc-q-text{font-size:clamp(11px,1.1vw,13px);color:var(--text);line-height:1.65;font-weight:700;margin-bottom:6px;}
+.disc-area{width:100%;border:1px solid var(--border);border-radius:7px;padding:8px 10px;font-family:'Nunito',sans-serif;font-size:12px;color:var(--text);background:var(--surf);resize:none;outline:none;transition:border-color .18s;line-height:1.6;}
+.disc-area:focus{border-color:var(--acc2);box-shadow:0 0 0 2px rgba(14,165,233,.12);}
+
+/* PH SCALE */
+.ph-scale{display:flex;height:20px;border-radius:7px;overflow:hidden;margin:7px 0;border:1px solid var(--border);}
+.ph-seg{flex:1;display:flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:700;color:#fff;}
+
+/* TUJUAN */
+.tujuan-hero{background:linear-gradient(135deg,#0c1445,#0369a1,#0ea5e9);border-radius:12px;padding:14px 18px;margin-bottom:7px;color:#fff;position:relative;overflow:hidden;}
+.tujuan-hero::after{content:'🧪';position:absolute;right:14px;top:-8px;font-size:68px;opacity:.1;}
+.tujuan-hero h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(15px,2vw,20px);font-weight:800;margin-bottom:3px;}
+
+/* PRINT STYLES */
+@media print{
+  body{overflow:visible!important;}
+  header,nav,.nb,#loadScreen,.sim-panel,.sim-controls,.ctrl-btns,.proc-tabs,.page:not(.print-active){display:none!important;}
+  .page.print-active{display:block!important;overflow:visible!important;}
+  .scroll{overflow:visible!important;}
+  .btn-pdf,.btn-submit,.btn-rst{display:none!important;}
+  @page{margin:15mm;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loadScreen">
+  <img class="load-sampul" src="https://yulinestiyarum.github.io/asambasa/sampul.png" alt="Sampul" onerror="this.style.display='none'">
+  <div class="load-title">Lab Maya Kimia</div>
+  <div class="load-sub">Larutan Asam &amp; Basa</div>
+  <div class="load-bar-wrap"><div class="load-bar-slide" id="loadBar"></div></div>
+  <div class="load-percent" id="loadPct">0%</div>
+  <div class="load-status" id="loadStat">Memuat laboratorium virtual…</div>
+  <button id="btnMulai" onclick="startLab()" style="animation:btnPop .4s cubic-bezier(.34,1.56,.64,1) forwards;">🚀 Mulai Praktikum</button>
+</div>
+<script>
+(function(){
+  const bar=document.getElementById('loadBar'),pct=document.getElementById('loadPct'),stat=document.getElementById('loadStat');
+  const msgs=['Memuat laboratorium virtual…','Menyiapkan reagen kimia…','Mengkalibrasi pH meter…','Mempersiapkan kertas lakmus…','Laboratorium siap!'];
+  let cur=0;
+  const iv=setInterval(()=>{
+    cur=Math.min(100,cur+1.6);
+    const v=Math.floor(cur);
+    bar.style.width=v+'%';pct.textContent=v+'%';
+    stat.textContent=msgs[Math.floor(v/25)]||msgs[4];
+    if(cur>=100){clearInterval(iv);document.getElementById('btnMulai').style.display='block';}
+  },38);
+})();
+function startLab(){
+  playTring();
+  const ls=document.getElementById('loadScreen');
+  ls.classList.add('hide');
+  setTimeout(()=>ls.style.display='none',700);
+}
+</script>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">🧪</div>
+    <div>
+      <div class="logo-text">Lab Maya Kimia</div>
+      <div class="logo-sub">Larutan Asam &amp; Basa</div>
+    </div>
+  </div>
+  <nav>
+    <button class="nb" onclick="show('tujuan',this)">🎯 Tujuan</button>
+    <button class="nb active" onclick="show('teori',this)">📚 Teori</button>
+    <button class="nb" onclick="show('alatbahan',this)">🔬 Alat &amp; Bahan</button>
+    <button class="nb" onclick="show('prosedur',this)">📋 Prosedur</button>
+    <button class="nb" onclick="show('simulasi',this)">⚗️ Simulasi</button>
+    <button class="nb" onclick="show('tabel',this)">📊 Tabel Pengamatan</button>
+    <button class="nb" onclick="show('diskusi',this)">💬 Diskusi</button>
+  </nav>
+</header>
+
+<div id="app">
+
+<!-- ========== TUJUAN ========== -->
+<div id="page-tujuan" class="page">
+<div class="scroll">
+  <div class="tujuan-hero">
+    <h2>Tujuan Pembelajaran &amp; Percobaan</h2>
+    <p style="font-size:11.5px;opacity:.85;line-height:1.6;">Praktikum Larutan Asam dan Basa – Laboratorium Maya Kimia</p>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="ch"><div class="ci b">🏫</div><div class="ct">Tujuan Pembelajaran</div></div>
+      <p>Murid dapat <strong style="color:var(--acc3)">menganalisis sifat asam dan basa</strong> serta dapat merefleksikan asam dan basa dalam kehidupan sehari-hari.</p>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ci g">🏆</div><div class="ct">Hasil Belajar</div></div>
+      <ul class="olist">
+        <li>Mengklasifikasikan berbagai zat ke dalam sifat asam, basa, atau netral</li>
+        <li>Menganalisis nilai pH pada produk sehari-hari dan memvalidasi klaim <em>"pH balance"</em></li>
+        <li>Terampil mengoperasikan laboratorium maya untuk uji indikator asam-basa</li>
+        <li>Teliti dalam pengamatan dan kritis dalam menganalisis data</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="ci p">🎯</div><div class="ct">Tujuan Percobaan</div></div>
+    <ul class="olist">
+      <li>Menentukan sifat asam, basa, atau netral dari berbagai sampel larutan (termasuk representasi produk sehari-hari seperti minuman dan air sabun) menggunakan indikator asam-basa pada laboratorium maya</li>
+      <li>Mengukur dan membandingkan nilai pH dari masing-masing larutan uji menggunakan alat ukur virtual untuk memahami konsep skala pH</li>
+      <li>Menganalisis data hasil pengujian pH untuk mengevaluasi tingkat keamanan zat dan membuktikan kebenaran klaim <em>"pH balance"</em> pada produk komersial</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="ci y">💡</div><div class="ct">Fakta: Klaim "pH Balance"</div></div>
+    <p>Klaim <em>"pH seimbang"</em> pada produk perawatan kulit <strong style="color:var(--red)">bukan berarti netral (pH 7)</strong>. Kulit manusia secara alami bersifat <strong style="color:var(--acc3)">sedikit asam (pH 4,7–5,5)</strong> untuk menahan bakteri.</p>
+    <div class="ph-scale">
+      <div class="ph-seg" style="background:#a00000;">0</div><div class="ph-seg" style="background:#cc0000;">1</div><div class="ph-seg" style="background:#e83535;">2</div><div class="ph-seg" style="background:#e86535;">3</div><div class="ph-seg" style="background:#e89035;">4</div><div class="ph-seg" style="background:#e8bc35;">5</div><div class="ph-seg" style="background:#c8e035;">6</div><div class="ph-seg" style="background:#6bcf3c;flex:2;font-size:8px;">7</div><div class="ph-seg" style="background:#35d0a0;">8</div><div class="ph-seg" style="background:#35a8c8;">9</div><div class="ph-seg" style="background:#3578d0;">10</div><div class="ph-seg" style="background:#3555d0;">11</div><div class="ph-seg" style="background:#4035c8;">12</div><div class="ph-seg" style="background:#5020b0;">13</div><div class="ph-seg" style="background:#600090;">14</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:9.5px;color:var(--text3);"><span>← Asam Kuat</span><span>Netral</span><span>Basa Kuat →</span></div>
+  </div>
+</div>
+</div>
+
+<!-- ========== TEORI ========== -->
+<div id="page-teori" class="page active">
+<div class="scroll">
+  <div class="card">
+    <div class="ch"><div class="ci b">📚</div><div class="ct">Dasar Teori: Asam, Basa, dan Netral</div></div>
+    <img src="https://yulinestiyarum.github.io/asambasa/teori.png" alt="Ilustrasi Teori" style="float:right;width:clamp(120px,20%,190px);margin:0 0 8px 14px;border-radius:9px;border:1px solid var(--border);" onerror="this.style.display='none'">
+    <p><strong style="color:var(--acc3)">Larutan asam</strong> adalah larutan yang mengandung lebih banyak ion H⁺ daripada ion OH⁻. Larutan bersifat asam jika nilai pH &lt; 7, cenderung berasa masam dan bersifat korosif. Contoh: HCl dan CH₃COOH.</p>
+    <p><strong style="color:#6d28d9">Larutan basa</strong> adalah larutan yang mengandung lebih banyak ion OH⁻. Larutan bersifat basa jika pH &gt; 7, cenderung berasa pahit dan terasa licin di kulit. Contoh: NaOH dan NH₃.</p>
+    <p><strong style="color:var(--green)">Larutan netral</strong> memiliki konsentrasi ion H⁺ dan OH⁻ yang seimbang, sehingga nilai pH = 7. Contoh: air murni (aquades).</p>
+    <div style="clear:both;"></div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="ch"><div class="ci r">📏</div><div class="ct">Skala pH (0–14)</div></div>
+      <div class="ph-scale">
+        <div class="ph-seg" style="background:#a00000;flex:2;font-size:8px;">0-2 Asam Kuat</div>
+        <div class="ph-seg" style="background:#e86535;flex:2;font-size:8px;">3-6 Asam</div>
+        <div class="ph-seg" style="background:#6bcf3c;flex:1;font-size:8px;">7</div>
+        <div class="ph-seg" style="background:#35a8c8;flex:2;font-size:8px;">8-11 Basa</div>
+        <div class="ph-seg" style="background:#5020b0;flex:2;font-size:8px;">12-14 Basa Kuat</div>
+      </div>
+      <p>pH diukur pada skala 0 hingga 14. Semakin kecil angka pH, semakin kuat sifat asamnya. Semakin besar angka pH, semakin kuat sifat basanya.</p>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ci g">🔬</div><div class="ct">Indikator Penguji</div></div>
+      <ul class="olist">
+        <li><strong>Kertas Lakmus Merah</strong> → berubah <strong style="color:#6d28d9">biru</strong> dalam larutan basa; tetap merah dalam asam</li>
+        <li><strong>Kertas Lakmus Biru</strong> → berubah <strong style="color:#dc2626">merah</strong> dalam larutan asam; tetap biru dalam basa</li>
+        <li><strong>pH Meter</strong> → mengukur nilai pH larutan secara presisi dan langsung</li>
+      </ul>
+    </div>
+  </div>
+  <div class="three-col">
+    <div class="card" style="text-align:center;background:linear-gradient(145deg,#fff5f5,#ffe4e4);border-color:#fecaca;">
+      <div style="font-size:26px;margin-bottom:5px;">🍋</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#b91c1c;font-size:13px;">ASAM</div>
+      <div style="font-size:11px;color:#7f1d1d;margin-top:4px;line-height:1.65;">pH &lt; 7<br>Ion H⁺ dominan<br>Rasa masam<br>Lakmus biru → merah</div>
+    </div>
+    <div class="card" style="text-align:center;background:linear-gradient(145deg,#f0fdf4,#dcfce7);border-color:#bbf7d0;">
+      <div style="font-size:26px;margin-bottom:5px;">💧</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#047857;font-size:13px;">NETRAL</div>
+      <div style="font-size:11px;color:#064e3b;margin-top:4px;line-height:1.65;">pH = 7<br>H⁺ = OH⁻<br>Tidak berasa<br>Lakmus tidak berubah</div>
+    </div>
+    <div class="card" style="text-align:center;background:linear-gradient(145deg,#faf5ff,#ede9fe);border-color:#ddd6fe;">
+      <div style="font-size:26px;margin-bottom:5px;">🧼</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#6d28d9;font-size:13px;">BASA</div>
+      <div style="font-size:11px;color:#4c1d95;margin-top:4px;line-height:1.65;">pH &gt; 7<br>Ion OH⁻ dominan<br>Rasa pahit/licin<br>Lakmus merah → biru</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ========== ALAT & BAHAN ========== -->
+<div id="page-alatbahan" class="page">
+<div class="scroll" style="overflow:hidden;display:flex;flex-direction:column;">
+  <div class="two-col" style="flex:1;min-height:0;height:100%;">
+    <div class="card" style="margin-bottom:0;display:flex;flex-direction:column;overflow:hidden;">
+      <div class="ch"><div class="ci b">🔧</div><div class="ct">Alat Percobaan</div></div>
+      <div class="ab-grid" style="flex:1;align-content:start;">
+        <div class="ab-item"><img src="https://yulinestiyarum.github.io/asambasa/beakerglass.png" alt="Beaker Glass" onerror="this.style.display='none'"><div class="ab-name">Gelas Kimia / Beaker Glass</div></div>
+        <div class="ab-item"><img src="https://yulinestiyarum.github.io/asambasa/pipet.png" alt="Pipet Tetes" onerror="this.style.display='none'"><div class="ab-name">Pipet Tetes</div></div>
+        <div class="ab-item"><img src="https://yulinestiyarum.github.io/asambasa/lakmusmerah.png" alt="Lakmus Merah" onerror="this.style.display='none'"><div class="ab-name">Kertas Lakmus Merah</div></div>
+        <div class="ab-item"><img src="https://yulinestiyarum.github.io/asambasa/lakmusbiru.png" alt="Lakmus Biru" onerror="this.style.display='none'"><div class="ab-name">Kertas Lakmus Biru</div></div>
+        <div class="ab-item"><img src="https://yulinestiyarum.github.io/asambasa/pHmeter.png" alt="pH Meter" onerror="this.style.display='none'"><div class="ab-name">pH Meter</div></div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:0;display:flex;flex-direction:column;overflow:hidden;">
+      <div class="ch"><div class="ci y">🧴</div><div class="ct">Bahan Percobaan</div></div>
+      <div class="ab-grid" style="flex:1;align-content:start;">
+        <div class="ab-item"><img src="https://yulinestiyarum.github.io/asambasa/H2SO4.png" alt="H2SO4" onerror="this.style.display='none'"><div class="ab-name">Larutan H₂SO₄</div></div>
+        <div class="ab-item"><img src="https://yulinestiyarum.github.io/asambasa/jeruknipis.png" alt="Jeruk Nipis" onerror="this.style.display='none'"><div class="ab-name">Air Jeruk Nipis</div></div>
+        <div class="ab-item"><img src="https://yulinestiyarum.github.io/asambasa/Mg(OH)2.png" alt="Mg(OH)2" onerror="this.style.display='none'"><div class="ab-name">Larutan Mg(OH)₂</div></div>
+        <div class="ab-item"><img src="https://yulinestiyarum.github.io/asambasa/airsabun.png" alt="Air Sabun" onerror="this.style.display='none'"><div class="ab-name">Air Sabun</div></div>
+        <div class="ab-item"><img src="https://yulinestiyarum.github.io/asambasa/infus.png" alt="Infus NaCl" onerror="this.style.display='none'"><div class="ab-name">Cairan Infus NaCl 0,9%</div></div>
+        <div class="ab-item"><img src="https://yulinestiyarum.github.io/asambasa/airgula.png" alt="Air Gula" onerror="this.style.display='none'"><div class="ab-name">Air Gula</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ========== PROSEDUR ========== -->
+<div id="page-prosedur" class="page">
+<div class="scroll">
+  <div class="proc-tabs">
+    <button class="proc-tab active" onclick="showProc(1,this)">⚗️ Percobaan 1</button>
+    <button class="proc-tab" onclick="showProc(2,this)">🍋 Percobaan 2</button>
+    <button class="proc-tab" onclick="showProc(3,this)">🧴 Percobaan 3</button>
+    <button class="proc-tab" onclick="showProc(4,this)">🧼 Percobaan 4</button>
+    <button class="proc-tab" onclick="showProc(5,this)">💉 Percobaan 5</button>
+    <button class="proc-tab" onclick="showProc(6,this)">🍬 Percobaan 6</button>
+  </div>
+
+  <div class="proc-content active" id="proc-1">
+    <div class="proc-header"><span style="font-size:22px;">⚗️</span><h3>Percobaan 1: Pengujian Larutan H₂SO₄</h3><div class="proc-badge">Percobaan 1</div></div>
+    <div class="steps">
+      <div class="step"><div class="snum">1</div><div class="step-icon">⚗️→🧪</div><p>Tuangkan <strong>larutan H₂SO₄</strong> ke dalam gelas kimia/<em>beaker glass</em>!</p></div>
+      <div class="step"><div class="snum">2</div><div class="step-icon">🔴📄</div><p>Celupkan <strong>kertas lakmus merah</strong> ke dalam larutan tersebut. Amati dan catat warna akhir kertas lakmus pada tabel pengamatan LKPD!</p></div>
+      <div class="step"><div class="snum">3</div><div class="step-icon">🔵📄</div><p>Celupkan <strong>kertas lakmus biru</strong> ke dalam larutan tersebut. Amati dan catat perubahan warnanya di LKPD!</p></div>
+      <div class="step"><div class="snum">4</div><div class="step-icon">📊🔬</div><p>Celupkan <strong>pH meter</strong> ke dalam larutan, catat nilai pH yang terukur!</p></div>
+    </div>
+  </div>
+
+  <div class="proc-content" id="proc-2">
+    <div class="proc-header"><span style="font-size:22px;">🍋</span><h3>Percobaan 2: Pengujian Air Jeruk Nipis</h3><div class="proc-badge">Percobaan 2</div></div>
+    <div class="steps">
+      <div class="step"><div class="snum">1</div><div class="step-icon">🍋→🧪</div><p>Tuangkan <strong>air jeruk nipis</strong> ke dalam gelas kimia/<em>beaker glass</em>!</p></div>
+      <div class="step"><div class="snum">2</div><div class="step-icon">🔴📄</div><p>Celupkan <strong>kertas lakmus merah</strong> ke dalam larutan tersebut. Amati dan catat warna akhir kertas lakmus pada tabel pengamatan LKPD!</p></div>
+      <div class="step"><div class="snum">3</div><div class="step-icon">🔵📄</div><p>Celupkan <strong>kertas lakmus biru</strong> ke dalam larutan tersebut. Amati dan catat perubahan warnanya di LKPD!</p></div>
+      <div class="step"><div class="snum">4</div><div class="step-icon">📊🔬</div><p>Celupkan <strong>pH meter</strong> ke dalam larutan, catat nilai pH yang terukur!</p></div>
+    </div>
+  </div>
+
+  <div class="proc-content" id="proc-3">
+    <div class="proc-header" style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);"><span style="font-size:22px;">🧴</span><h3>Percobaan 3: Pengujian Larutan Mg(OH)₂</h3><div class="proc-badge">Percobaan 3</div></div>
+    <div class="steps">
+      <div class="step"><div class="snum">1</div><div class="step-icon">🧴→🧪</div><p>Tuangkan <strong>larutan Mg(OH)₂</strong> ke dalam gelas kimia/<em>beaker glass</em>!</p></div>
+      <div class="step"><div class="snum">2</div><div class="step-icon">🔴📄</div><p>Celupkan <strong>kertas lakmus merah</strong> ke dalam larutan tersebut. Amati dan catat warna akhir kertas lakmus pada tabel pengamatan LKPD!</p></div>
+      <div class="step"><div class="snum">3</div><div class="step-icon">🔵📄</div><p>Celupkan <strong>kertas lakmus biru</strong> ke dalam larutan tersebut. Amati dan catat perubahan warnanya di LKPD!</p></div>
+      <div class="step"><div class="snum">4</div><div class="step-icon">📊🔬</div><p>Celupkan <strong>pH meter</strong> ke dalam larutan, catat nilai pH yang terukur!</p></div>
+    </div>
+  </div>
+
+  <div class="proc-content" id="proc-4">
+    <div class="proc-header" style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);"><span style="font-size:22px;">🧼</span><h3>Percobaan 4: Pengujian Air Sabun</h3><div class="proc-badge">Percobaan 4</div></div>
+    <div class="steps">
+      <div class="step"><div class="snum">1</div><div class="step-icon">🧼→🧪</div><p>Tuangkan sampel <strong>air sabun</strong> ke dalam gelas kimia/<em>beaker glass</em>!</p></div>
+      <div class="step"><div class="snum">2</div><div class="step-icon">🔴📄</div><p>Celupkan <strong>kertas lakmus merah</strong> ke dalam larutan tersebut. Amati dan catat warna akhir kertas lakmus pada tabel pengamatan LKPD!</p></div>
+      <div class="step"><div class="snum">3</div><div class="step-icon">🔵📄</div><p>Celupkan <strong>kertas lakmus biru</strong> ke dalam larutan tersebut. Amati dan catat perubahan warnanya di LKPD!</p></div>
+      <div class="step"><div class="snum">4</div><div class="step-icon">📊🔬</div><p>Celupkan <strong>pH meter</strong> ke dalam larutan, catat nilai pH yang terukur!</p></div>
+    </div>
+  </div>
+
+  <div class="proc-content" id="proc-5">
+    <div class="proc-header" style="background:linear-gradient(135deg,#047857,#10b981);"><span style="font-size:22px;">💉</span><h3>Percobaan 5: Pengujian Cairan Infus NaCl 0,9%</h3><div class="proc-badge">Percobaan 5</div></div>
+    <div class="steps">
+      <div class="step"><div class="snum">1</div><div class="step-icon">💉→🧪</div><p>Tuangkan sampel <strong>cairan infus NaCl 0,9%</strong> ke dalam gelas kimia/<em>beaker glass</em>!</p></div>
+      <div class="step"><div class="snum">2</div><div class="step-icon">🔴📄</div><p>Celupkan <strong>kertas lakmus merah</strong> ke dalam larutan tersebut. Amati dan catat warna akhir kertas lakmus pada tabel pengamatan LKPD!</p></div>
+      <div class="step"><div class="snum">3</div><div class="step-icon">🔵📄</div><p>Celupkan <strong>kertas lakmus biru</strong> ke dalam larutan tersebut. Amati dan catat perubahan warnanya di LKPD!</p></div>
+      <div class="step"><div class="snum">4</div><div class="step-icon">📊🔬</div><p>Celupkan <strong>pH meter</strong> ke dalam larutan, catat nilai pH yang terukur!</p></div>
+    </div>
+  </div>
+
+  <div class="proc-content" id="proc-6">
+    <div class="proc-header" style="background:linear-gradient(135deg,#047857,#10b981);"><span style="font-size:22px;">🍬</span><h3>Percobaan 6: Pengujian Air Gula</h3><div class="proc-badge">Percobaan 6</div></div>
+    <div class="steps">
+      <div class="step"><div class="snum">1</div><div class="step-icon">🍬→🧪</div><p>Tuangkan sampel <strong>air gula</strong> ke dalam gelas kimia/<em>beaker glass</em>!</p></div>
+      <div class="step"><div class="snum">2</div><div class="step-icon">🔴📄</div><p>Celupkan <strong>kertas lakmus merah</strong> ke dalam larutan tersebut. Amati dan catat warna akhir kertas lakmus pada tabel pengamatan LKPD!</p></div>
+      <div class="step"><div class="snum">3</div><div class="step-icon">🔵📄</div><p>Celupkan <strong>kertas lakmus biru</strong> ke dalam larutan tersebut. Amati dan catat perubahan warnanya di LKPD!</p></div>
+      <div class="step"><div class="snum">4</div><div class="step-icon">📊🔬</div><p>Celupkan <strong>pH meter</strong> ke dalam larutan, catat nilai pH yang terukur!</p></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ========== SIMULASI ========== -->
+<div id="page-simulasi" class="page">
+<div class="scroll" style="padding:7px 9px;display:flex;flex-direction:column;overflow:hidden;">
+  <div class="sim-layout" style="flex:1;min-height:0;">
+    <!-- Left: percobaan selector -->
+    <div class="sim-panel">
+      <h3>⚗️ Percobaan</h3>
+      <button class="exp-btn active" id="expBtn0" onclick="selectExp(0,this)"><span class="exp-num">1</span> H₂SO₄</button>
+      <button class="exp-btn" id="expBtn1" onclick="selectExp(1,this)"><span class="exp-num">2</span> Jeruk Nipis</button>
+      <button class="exp-btn" id="expBtn2" onclick="selectExp(2,this)"><span class="exp-num">3</span> Mg(OH)₂</button>
+      <button class="exp-btn" id="expBtn3" onclick="selectExp(3,this)"><span class="exp-num">4</span> Air Sabun</button>
+      <button class="exp-btn" id="expBtn4" onclick="selectExp(4,this)"><span class="exp-num">5</span> NaCl 0,9%</button>
+      <button class="exp-btn" id="expBtn5" onclick="selectExp(5,this)"><span class="exp-num">6</span> Air Gula</button>
+      <div style="margin-top:auto;padding-top:7px;border-top:1px solid var(--border);">
+        <div style="font-size:8.5px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;">Status</div>
+        <div id="expStatus" style="font-size:10.5px;color:var(--acc3);font-weight:700;line-height:1.5;">Pilih percobaan, lalu tekan Tuang</div>
+      </div>
+    </div>
+
+    <!-- Right: lab bench -->
+    <div class="sim-main">
+      <!-- THE LAB BENCH -->
+      <div class="lab-bench" id="labBench">
+        <!-- Decorative top lights -->
+        <div class="bench-lights">
+          <div class="bench-dot bd-blue"></div>
+          <div class="bench-label">LAB MAYA KIMIA · ASAM &amp; BASA</div>
+          <div class="bench-dot bd-green"></div>
+        </div>
+
+        <!-- BEAKER (centered, large) -->
+        <div id="beakerWrap">
+          <img id="beakerImg" src="https://yulinestiyarum.github.io/asambasa/beakerglass.png" alt="Beaker Glass" onerror="this.style.display='none'">
+          <div id="beakerLabel">Beaker Glass</div>
+        </div>
+
+        <!-- LIQUID (layered behind beaker image) -->
+        <div id="liquidWrap">
+          <div id="liquidFill">
+            <div id="liquidWave"></div>
+          </div>
+        </div>
+
+        <!-- POUR STREAM -->
+        <div id="pourStream"></div>
+
+        <!-- BOTTLE (right, large) -->
+        <div id="bottleWrap">
+          <div id="bottleCap"></div>
+          <img id="bottleImg" src="https://yulinestiyarum.github.io/asambasa/H2SO4.png" alt="Larutan" onerror="this.style.display='none'">
+          <div id="bottleLabel">H₂SO₄</div>
+        </div>
+
+        <!-- LAKMUS MERAH (left, large) -->
+        <div class="tool-wrap" id="lakmusM">
+          <img src="https://yulinestiyarum.github.io/asambasa/lakmusmerah.png" alt="Lakmus Merah" onerror="this.style.display='none'">
+          <div class="tool-label">Lakmus Merah</div>
+        </div>
+
+        <!-- LAKMUS BIRU (center-left, large) -->
+        <div class="tool-wrap" id="lakmusB">
+          <img src="https://yulinestiyarum.github.io/asambasa/lakmusbiru.png" alt="Lakmus Biru" onerror="this.style.display='none'">
+          <div class="tool-label">Lakmus Biru</div>
+        </div>
+
+        <!-- PH METER (right) -->
+        <div class="tool-wrap" id="phmeter">
+          <img src="https://yulinestiyarum.github.io/asambasa/pHmeter.png" alt="pH Meter" onerror="this.style.display='none'">
+          <div class="tool-label">pH Meter</div>
+        </div>
+
+        <!-- pH reading overlay (center-top) -->
+        <div id="phReading">
+          <div id="phLabel">pH Terukur</div>
+          <div id="phValue">—</div>
+          <div id="phType"></div>
+        </div>
+
+        <!-- Lakmus result overlay (right-top) -->
+        <div id="lakmusResults">
+          <div class="lr-title">Hasil Lakmus</div>
+          <div class="lr-row">
+            <div style="text-align:center;">
+              <div class="lr-strip" id="lmStrip" style="background:#dc2626;"></div>
+              <div class="lr-sub">Merah</div>
+            </div>
+            <div style="text-align:center;">
+              <div class="lr-strip" id="lbStrip" style="background:#3b82f6;"></div>
+              <div class="lr-sub">Biru</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bench decorations -->
+        <div class="bench-surface-line"></div>
+        <div class="bench-floor"></div>
+      </div>
+
+      <!-- CONTROLS -->
+      <div class="sim-controls">
+        <div class="ctrl-title">🎮 <span id="expName" style="color:var(--acc2);">Percobaan 1: Larutan H₂SO₄</span></div>
+        <div class="ctrl-btns">
+          <button class="btn-act btn-pour" id="btnPour" onclick="doPour()">⚗️ Tuang</button>
+          <button class="btn-act btn-lm" id="btnLakM" onclick="doLakmusM()" disabled>🔴 Lakmus Merah</button>
+          <button class="btn-act btn-lb" id="btnLakB" onclick="doLakmusB()" disabled>🔵 Lakmus Biru</button>
+          <button class="btn-act btn-ph" id="btnPH" onclick="doPHMeter()" disabled>📊 Ukur pH</button>
+          <button class="btn-act btn-rst" onclick="resetSim()">🔄 Reset</button>
+        </div>
+        <div class="result-row" id="resultRow" style="display:none;">
+          <div class="result-box" id="resLM"><div class="result-label">Lakmus Merah</div><div class="result-val" id="resLMVal">—</div></div>
+          <div class="result-box" id="resLB"><div class="result-label">Lakmus Biru</div><div class="result-val" id="resLBVal">—</div></div>
+          <div class="result-box" id="resPH"><div class="result-label">Nilai pH</div><div class="result-val" id="resPHVal">—</div></div>
+          <div class="result-box" id="resSifat"><div class="result-label">Sifat</div><div class="result-val" id="resSifatVal">—</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ========== TABEL PENGAMATAN ========== -->
+<div id="page-tabel" class="page">
+<div class="scroll">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+    <div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:800;color:var(--acc3);">📊 Tabel Pengamatan</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:2px;">Terisi otomatis setelah percobaan pada menu Simulasi dilakukan</div>
+    </div>
+    <button class="btn-pdf btn-pdf-tabel" onclick="downloadTabelPDF()">⬇️ Unduh PDF Tabel</button>
+  </div>
+
+  <div id="tabelPrintArea">
+    <div style="text-align:center;margin-bottom:14px;display:none;" id="tabelPrintHeader">
+      <div style="font-size:18px;font-weight:800;color:#0369a1;">TABEL PENGAMATAN</div>
+      <div style="font-size:13px;color:#475569;margin-top:3px;">Praktikum Larutan Asam dan Basa – Lab Maya Kimia</div>
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden;margin-bottom:8px;">
+      <div style="padding:10px 13px;background:linear-gradient(135deg,#eff9ff,#e0f2fe);border-bottom:1px solid var(--border);">
+        <div style="font-size:13px;font-weight:700;color:var(--acc3);">Indikator: Perubahan Warna Kertas Lakmus</div>
+      </div>
+      <div style="overflow-x:auto;padding:1px;">
+        <table class="obs-table">
+          <thead>
+            <tr>
+              <th style="width:40px;">No</th>
+              <th>Sampel Larutan</th>
+              <th style="text-align:center;">Warna Akhir Lakmus Merah</th>
+              <th style="text-align:center;">Warna Akhir Lakmus Biru</th>
+              <th style="text-align:center;">Nilai pH</th>
+              <th style="text-align:center;">Sifat Larutan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Larutan H₂SO₄</td><td style="text-align:center;" class="td-lm-0">—</td><td style="text-align:center;" class="td-lb-0">—</td><td style="text-align:center;" class="td-ph-0">—</td><td style="text-align:center;" class="td-sf-0">—</td></tr>
+            <tr><td>2</td><td>Air Jeruk Nipis</td><td style="text-align:center;" class="td-lm-1">—</td><td style="text-align:center;" class="td-lb-1">—</td><td style="text-align:center;" class="td-ph-1">—</td><td style="text-align:center;" class="td-sf-1">—</td></tr>
+            <tr><td>3</td><td>Larutan Mg(OH)₂</td><td style="text-align:center;" class="td-lm-2">—</td><td style="text-align:center;" class="td-lb-2">—</td><td style="text-align:center;" class="td-ph-2">—</td><td style="text-align:center;" class="td-sf-2">—</td></tr>
+            <tr><td>4</td><td>Air Sabun</td><td style="text-align:center;" class="td-lm-3">—</td><td style="text-align:center;" class="td-lb-3">—</td><td style="text-align:center;" class="td-ph-3">—</td><td style="text-align:center;" class="td-sf-3">—</td></tr>
+            <tr><td>5</td><td>Cairan Infus NaCl 0,9%</td><td style="text-align:center;" class="td-lm-4">—</td><td style="text-align:center;" class="td-lb-4">—</td><td style="text-align:center;" class="td-ph-4">—</td><td style="text-align:center;" class="td-sf-4">—</td></tr>
+            <tr><td>6</td><td>Air Gula</td><td style="text-align:center;" class="td-lm-5">—</td><td style="text-align:center;" class="td-lb-5">—</td><td style="text-align:center;" class="td-ph-5">—</td><td style="text-align:center;" class="td-sf-5">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="background:#fffbeb;border-color:#fde68a;">
+      <div style="font-size:11px;font-weight:700;color:#92400e;margin-bottom:5px;">📌 Cara Membaca Hasil:</div>
+      <div style="font-size:11.5px;color:#78350f;line-height:1.7;">
+        <strong>Asam (pH &lt; 7):</strong> Lakmus biru berubah merah, lakmus merah tetap merah.<br>
+        <strong>Basa (pH &gt; 7):</strong> Lakmus merah berubah biru, lakmus biru tetap biru.<br>
+        <strong>Netral (pH = 7):</strong> Warna kedua lakmus tidak mengalami perubahan.
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ========== DISKUSI ========== -->
+<div id="page-diskusi" class="page">
+<div class="scroll">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
+    <div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:800;color:var(--acc3);">💬 Pertanyaan Diskusi</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:2px;">Jawablah berdasarkan hasil simulasi percobaan</div>
+    </div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;">
+      <button class="btn-pdf btn-submit" onclick="submitDiskusi()">📤 Kumpulkan Jawaban</button>
+      <button class="btn-pdf btn-pdf-disc" onclick="downloadDiskusiPDF()">⬇️ Unduh PDF Diskusi</button>
+    </div>
+  </div>
+
+  <div id="diskusiPrintArea">
+    <div style="text-align:center;margin-bottom:14px;display:none;" id="diskusiPrintHeader">
+      <div style="font-size:18px;font-weight:800;color:#0369a1;">LEMBAR DISKUSI</div>
+      <div style="font-size:13px;color:#475569;margin-top:3px;">Praktikum Larutan Asam dan Basa – Lab Maya Kimia</div>
+      <div style="font-size:12px;color:#475569;margin-top:2px;">Nama: _________________ &nbsp;|&nbsp; Kelas: _________________ &nbsp;|&nbsp; Tanggal: _________________</div>
+    </div>
+
+    <div class="disc-q">
+      <div class="disc-q-num">DISKUSI 01</div>
+      <div class="disc-q-text">Berdasarkan hasil pengamatan perubahan warna kertas lakmus dan nilai pH, kelompokkan keenam sampel larutan (H₂SO₄, air jeruk nipis, Mg(OH)₂, air sabun, NaCl 0,9%, dan air gula) ke dalam sifat asam, basa, atau netral!</div>
+      <textarea class="disc-area" id="ans1" rows="3" placeholder="Tuliskan jawaban kelompokmu di sini…"></textarea>
+    </div>
+    <div class="disc-q">
+      <div class="disc-q-num">DISKUSI 02</div>
+      <div class="disc-q-text">Bandingkan nilai pH antara larutan H₂SO₄ dengan air jeruk nipis serta larutan Mg(OH)₂ dengan air sabun. Mengapa nilai pH produk sehari-hari cenderung berbeda (tidak sekuat) zat kimia laboratorium?</div>
+      <textarea class="disc-area" id="ans2" rows="3" placeholder="Tuliskan analisismu di sini…"></textarea>
+    </div>
+    <div class="disc-q">
+      <div class="disc-q-num">DISKUSI 03</div>
+      <div class="disc-q-text">Cairan infus NaCl 0,9% dan air gula menunjukkan sifat netral (pH=7). Analisislah mengapa cairan medis yang dimasukkan ke dalam tubuh manusia (seperti infus) wajib memiliki pH yang netral atau seimbang dengan cairan tubuh manusia!</div>
+      <textarea class="disc-area" id="ans3" rows="3" placeholder="Tuliskan analisismu di sini…"></textarea>
+    </div>
+    <div class="disc-q">
+      <div class="disc-q-num">DISKUSI 04</div>
+      <div class="disc-q-text">Bandingkan nilai pH air sabun hasil pengujian dengan fakta bahwa pH alami kulit manusia adalah 4,7–5,5 (sedikit asam). Berdasarkan temuan tersebut, kritisilah kebenaran dan keamanan klaim produk yang dilabeli <em>"pH balance"</em> di pasaran!</div>
+      <textarea class="disc-area" id="ans4" rows="3" placeholder="Tuliskan kritik dan analisismu di sini…"></textarea>
+    </div>
+  </div>
+
+  <!-- Submit success notice -->
+  <div id="submitNotice" style="display:none;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac;border-radius:10px;padding:12px 16px;margin-top:8px;text-align:center;">
+    <div style="font-size:22px;margin-bottom:5px;">✅</div>
+    <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#047857;font-size:14px;">Jawaban berhasil dikumpulkan!</div>
+    <div style="font-size:11.5px;color:#065f46;margin-top:3px;">Unduh PDF untuk menyimpan atau mencetak jawaban Anda.</div>
+  </div>
+</div>
+</div>
+
+</div><!-- #app -->
+
+<script>
+// ===================== EXPERIMENT DATA =====================
+const experiments = [
+  {id:1,name:'Larutan H₂SO₄',emoji:'⚗️',img:'https://yulinestiyarum.github.io/asambasa/H2SO4.png',label:'H₂SO₄',
+   liquidColor:'rgba(210,230,255,0.35)',liquidColorSolid:'rgba(220,235,255,0.5)',liquidWaveColor:'rgba(200,220,255,0.6)',
+   pH:1.2,pHDisplay:'1,2',type:'asam',lakmusM:'Tetap Merah',lakmusB:'Berubah Merah',
+   lakmusMColor:'#dc2626',lakmusBColor:'#dc2626',typeColor:'#b91c1c'},
+  {id:2,name:'Air Jeruk Nipis',emoji:'🍋',img:'https://yulinestiyarum.github.io/asambasa/jeruknipis.png',label:'Jeruk Nipis',
+   liquidColor:'rgba(253,224,71,0.45)',liquidColorSolid:'rgba(253,224,71,0.65)',liquidWaveColor:'rgba(250,204,21,0.7)',
+   pH:2.5,pHDisplay:'2,5',type:'asam',lakmusM:'Tetap Merah',lakmusB:'Berubah Merah',
+   lakmusMColor:'#dc2626',lakmusBColor:'#dc2626',typeColor:'#b91c1c'},
+  {id:3,name:'Larutan Mg(OH)₂',emoji:'🧴',img:'https://yulinestiyarum.github.io/asambasa/Mg(OH)2.png',label:'Mg(OH)₂',
+   liquidColor:'rgba(147,197,253,0.45)',liquidColorSolid:'rgba(147,197,253,0.65)',liquidWaveColor:'rgba(96,165,250,0.7)',
+   pH:10.5,pHDisplay:'10,5',type:'basa',lakmusM:'Berubah Biru',lakmusB:'Tetap Biru',
+   lakmusMColor:'#3b82f6',lakmusBColor:'#3b82f6',typeColor:'#6d28d9'},
+  {id:4,name:'Air Sabun',emoji:'🧼',img:'https://yulinestiyarum.github.io/asambasa/airsabun.png',label:'Air Sabun',
+   liquidColor:'rgba(196,181,253,0.4)',liquidColorSolid:'rgba(196,181,253,0.6)',liquidWaveColor:'rgba(167,139,250,0.65)',
+   pH:9.0,pHDisplay:'9,0',type:'basa',lakmusM:'Berubah Biru',lakmusB:'Tetap Biru',
+   lakmusMColor:'#3b82f6',lakmusBColor:'#3b82f6',typeColor:'#6d28d9'},
+  {id:5,name:'Cairan Infus NaCl 0,9%',emoji:'💉',img:'https://yulinestiyarum.github.io/asambasa/infus.png',label:'NaCl 0,9%',
+   liquidColor:'rgba(110,231,183,0.32)',liquidColorSolid:'rgba(110,231,183,0.5)',liquidWaveColor:'rgba(52,211,153,0.6)',
+   pH:7.0,pHDisplay:'7,0',type:'netral',lakmusM:'Tetap Merah',lakmusB:'Tetap Biru',
+   lakmusMColor:'#dc2626',lakmusBColor:'#3b82f6',typeColor:'#047857'},
+  {id:6,name:'Air Gula',emoji:'🍬',img:'https://yulinestiyarum.github.io/asambasa/airgula.png',label:'Air Gula',
+   liquidColor:'rgba(253,230,138,0.38)',liquidColorSolid:'rgba(253,230,138,0.55)',liquidWaveColor:'rgba(252,211,77,0.6)',
+   pH:7.0,pHDisplay:'7,0',type:'netral',lakmusM:'Tetap Merah',lakmusB:'Tetap Biru',
+   lakmusMColor:'#dc2626',lakmusBColor:'#3b82f6',typeColor:'#047857'},
+];
+
+// ===================== STATE =====================
+let currentExp=0, poured=false, lakMDone=false, lakBDone=false, phDone=false, animating=false;
+
+// ===================== AUDIO =====================
+let audioCtx=null;
+function getCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function playClick(){
+  try{const c=getCtx(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=700;g.gain.setValueAtTime(0.07,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.06);o.start();o.stop(c.currentTime+0.06);}catch(e){}
+}
+function playPour(){
+  try{
+    const c=getCtx(),buf=c.createBuffer(1,c.sampleRate*1.6,c.sampleRate),d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*0.25;
+    const s=c.createBufferSource();s.buffer=buf;
+    const f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=800;f.Q.value=2;
+    const g=c.createGain();g.gain.setValueAtTime(0,c.currentTime);g.gain.linearRampToValueAtTime(0.22,c.currentTime+0.35);g.gain.linearRampToValueAtTime(0.18,c.currentTime+1.3);g.gain.linearRampToValueAtTime(0,c.currentTime+1.6);
+    s.connect(f);f.connect(g);g.connect(c.destination);s.start();s.stop(c.currentTime+1.6);
+  }catch(e){}
+}
+function playDip(){
+  try{const c=getCtx(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.setValueAtTime(280,c.currentTime);o.frequency.exponentialRampToValueAtTime(180,c.currentTime+0.28);g.gain.setValueAtTime(0.1,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.28);o.start();o.stop(c.currentTime+0.28);}catch(e){}
+}
+function playBeep(f=880){
+  try{const c=getCtx(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=f;g.gain.setValueAtTime(0.08,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.22);o.start();o.stop(c.currentTime+0.22);}catch(e){}
+}
+function playSuccess(){
+  try{[523,659,784,1047].forEach((f,i)=>{const c=getCtx(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=f;const t=c.currentTime+i*0.12;g.gain.setValueAtTime(0.09,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.22);o.start(t);o.stop(t+0.22);});}catch(e){}
+}
+function playTring(){
+  try{[880,1046,1318].forEach((f,i)=>{const c=getCtx(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=f;const t=c.currentTime+i*0.1;g.gain.setValueAtTime(0.1,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.28);o.start(t);o.stop(t+0.28);});}catch(e){}
+}
+
+// ===================== NAV =====================
+function show(id,btn){
+  playClick();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+}
+function showProc(n,btn){
+  playClick();
+  document.querySelectorAll('.proc-content').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('.proc-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('proc-'+n).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ===================== SIMULATION =====================
+function selectExp(idx,btn){
+  playClick();
+  currentExp=idx;
+  document.querySelectorAll('.exp-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  resetSim();
+  const exp=experiments[idx];
+  document.getElementById('bottleImg').src=exp.img;
+  document.getElementById('bottleLabel').textContent=exp.label;
+  document.getElementById('expName').textContent=`Percobaan ${exp.id}: ${exp.name}`;
+  document.getElementById('expStatus').textContent=`Siap: ${exp.name}. Tekan "Tuang".`;
+}
+
+function getBeakerCenter(){
+  const bench=document.getElementById('labBench');
+  const bRect=bench.getBoundingClientRect();
+  return{x:bRect.width/2,y:bRect.height};
+}
+
+function resetSim(){
+  poured=false;lakMDone=false;lakBDone=false;phDone=false;animating=false;
+  // Reset liquid
+  const liq=document.getElementById('liquidFill');
+  liq.style.height='0px';liq.style.background='';
+  document.getElementById('liquidWave').style.background='';
+  // Reset bottle
+  const bottle=document.getElementById('bottleWrap');
+  bottle.style.transition='none';
+  bottle.style.right='8%';bottle.style.bottom='22%';bottle.style.transform='';
+  const cap=document.getElementById('bottleCap');
+  cap.style.transform='';cap.style.opacity='1';
+  // Reset pour stream
+  const ps=document.getElementById('pourStream');
+  ps.style.display='none';
+  // Buttons
+  document.getElementById('btnPour').disabled=false;
+  document.getElementById('btnLakM').disabled=true;
+  document.getElementById('btnLakB').disabled=true;
+  document.getElementById('btnPH').disabled=true;
+  // Hide overlays
+  document.getElementById('phReading').style.display='none';
+  document.getElementById('lakmusResults').style.display='none';
+  document.getElementById('resultRow').style.display='none';
+  // Reset tools positions to default (near beaker sides)
+  const lm=document.getElementById('lakmusM');
+  const lb=document.getElementById('lakmusB');
+  const ph=document.getElementById('phmeter');
+  lm.style.transition='none';lb.style.transition='none';ph.style.transition='none';
+  lm.style.left='28%';lm.style.bottom='28%';lm.style.transform='';lm.style.opacity='1';
+  lb.style.left='37%';lb.style.bottom='28%';lb.style.transform='';lb.style.opacity='1';
+  ph.style.right='26%';ph.style.bottom='28%';ph.style.left='auto';ph.style.transform='';ph.style.opacity='1';
+  // Reset lakmus image filter
+  document.querySelectorAll('.tool-wrap img').forEach(img=>img.style.filter='drop-shadow(0 4px 10px rgba(0,0,0,0.45))');
+  // Reset result boxes
+  ['resLM','resLB','resPH','resSifat'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.classList.remove('revealed');
+    el.style.borderColor='';el.style.background='';
+  });
+  document.getElementById('resLMVal').textContent='—';document.getElementById('resLMVal').style.color='';
+  document.getElementById('resLBVal').textContent='—';document.getElementById('resLBVal').style.color='';
+  document.getElementById('resPHVal').textContent='—';document.getElementById('resPHVal').style.color='';
+  document.getElementById('resSifatVal').textContent='—';document.getElementById('resSifatVal').style.color='';
+}
+
+async function doPour(){
+  if(animating||poured)return;
+  animating=true;playClick();
+  const exp=experiments[currentExp];
+  const bench=document.getElementById('labBench');
+  const bottle=document.getElementById('bottleWrap');
+  const cap=document.getElementById('bottleCap');
+  const ps=document.getElementById('pourStream');
+  const liq=document.getElementById('liquidFill');
+  const wave=document.getElementById('liquidWave');
+
+  // Get beaker center for pour positioning
+  const benchW=bench.offsetWidth;
+  const benchH=bench.offsetHeight;
+  // Beaker center X is 50%, beaker bottom is at bench bottom 18%
+  const beakerCenterXPct=50;
+  const beakerTopYPct=100-18-(benchH*0.32/benchH*100); // approx top of beaker
+
+  // 1. Open cap
+  cap.style.transform='rotate(-50deg) translateX(14px) translateY(-4px)';
+  cap.style.opacity='0';
+  await sleep(320);
+
+  // 2. Move bottle to above beaker center
+  bottle.style.transition='all 0.75s cubic-bezier(.34,1.1,.64,1)';
+  // Position bottle so it's centered above beaker
+  // beaker is at left:50% transform:-50%, bottle needs to be above it
+  bottle.style.right='auto';
+  bottle.style.left='calc(50% - 2%)';
+  bottle.style.bottom='60%';
+  bottle.style.transform='translateX(-50%)';
+  await sleep(800);
+
+  // 3. Tilt bottle
+  bottle.style.transition='transform .4s ease';
+  bottle.style.transform='translateX(-50%) rotate(-125deg)';
+  await sleep(420);
+
+  // 4. Pour stream: from just below bottle tip to top of liquid in beaker
+  playPour();
+  ps.style.display='block';
+  ps.style.left='50%';
+  ps.style.transform='translateX(-50%)';
+  ps.style.top='30%';
+  ps.style.height='22%';
+  ps.style.background=exp.liquidColor;
+  ps.style.boxShadow=`0 0 8px ${exp.liquidColorSolid}`;
+  ps.style.animation='none';
+
+  // 5. Fill beaker - liquid rises
+  liq.style.background=exp.liquidColor;
+  wave.style.background=exp.liquidWaveColor;
+  liq.style.height='68px';
+
+  await sleep(1500);
+
+  // 6. Stop pour, restore bottle
+  ps.style.display='none';
+  bottle.style.transition='transform .35s ease';
+  bottle.style.transform='translateX(-50%) rotate(0deg)';
+  await sleep(380);
+  cap.style.transform='';cap.style.opacity='1';
+  await sleep(100);
+  bottle.style.transition='all 0.7s cubic-bezier(.34,1.1,.64,1)';
+  bottle.style.left='auto';
+  bottle.style.right='8%';
+  bottle.style.bottom='22%';
+  bottle.style.transform='';
+
+  poured=true;animating=false;
+  document.getElementById('btnPour').disabled=true;
+  document.getElementById('btnLakM').disabled=false;
+  document.getElementById('btnLakB').disabled=false;
+  document.getElementById('btnPH').disabled=false;
+  document.getElementById('expStatus').textContent='✅ Larutan dituang! Celupkan lakmus atau ukur pH.';
+}
+
+async function doLakmusM(){
+  if(animating||!poured||lakMDone)return;
+  animating=true;playClick();
+  const exp=experiments[currentExp];
+  const el=document.getElementById('lakmusM');
+
+  // Step 1: geser horizontal ke atas beaker (center seperti lakmusB)
+  el.style.transition='all 0.5s cubic-bezier(.34,1.1,.64,1)';
+  el.style.left='50%';
+  el.style.bottom='38%';
+  el.style.transform='translateX(-50%)';
+  await sleep(550);
+
+  // Step 2: celupkan ke dalam cairan beaker (masuk lebih dalam)
+  el.style.transition='bottom 0.4s ease-in';
+  el.style.bottom='14%';
+  await sleep(430);
+  playDip();
+  await sleep(400);
+
+  // Change color based on result
+  const img=el.querySelector('img');
+  if(exp.lakmusMColor==='#3b82f6'){
+    img.style.filter='hue-rotate(200deg) saturate(2.5) brightness(1.1) drop-shadow(0 0 10px #3b82f6)';
+  } else {
+    img.style.filter='saturate(2) brightness(1.1) drop-shadow(0 0 10px #dc2626)';
+  }
+  await sleep(500);
+
+  // Tetap tercelup dalam beaker
+  el.style.transition='bottom 0.3s ease-out';
+  el.style.bottom='16%';
+
+  // Show lakmus result strip
+  document.getElementById('lakmusResults').style.display='block';
+  document.getElementById('lmStrip').style.background=exp.lakmusMColor;
+
+  // Result row
+  document.getElementById('resultRow').style.display='flex';
+  const rv=document.getElementById('resLMVal');
+  rv.textContent=exp.lakmusM==='Tetap Merah'?'Merah':'Biru';
+  rv.style.color=exp.lakmusMColor;
+  const rmBox=document.getElementById('resLM');
+  rmBox.classList.add('revealed');
+  rmBox.style.borderColor=exp.lakmusMColor+'55';
+  rmBox.style.background=exp.lakmusMColor+'14';
+
+  // Update table cells
+  updateTable(currentExp,'lm',exp.lakmusM,exp.lakmusMColor);
+
+  lakMDone=true;animating=false;
+  document.getElementById('expStatus').textContent='🔴 Lakmus merah selesai!';
+  if(lakBDone&&phDone)doAllDone();
+}
+
+async function doLakmusB(){
+  if(animating||!poured||lakBDone)return;
+  animating=true;playClick();
+  const exp=experiments[currentExp];
+  const el=document.getElementById('lakmusB');
+
+  // Step 1: geser horizontal ke atas beaker
+  el.style.transition='all 0.5s cubic-bezier(.34,1.1,.64,1)';
+  el.style.left='50%';
+  el.style.bottom='38%';
+  el.style.transform='translateX(-50%)';
+  await sleep(550);
+
+  // Step 2: celupkan ke dalam cairan beaker
+  el.style.transition='bottom 0.4s ease-in';
+  el.style.bottom='14%';
+  await sleep(430);
+  playDip();
+  await sleep(400);
+
+  const img=el.querySelector('img');
+  if(exp.lakmusBColor==='#dc2626'){
+    img.style.filter='hue-rotate(140deg) saturate(5) brightness(0.95) drop-shadow(0 0 12px #dc2626)';
+  } else {
+    img.style.filter='saturate(2) brightness(1.1) drop-shadow(0 0 10px #3b82f6)';
+  }
+  await sleep(500);
+
+  // Tetap tercelup dalam beaker
+  el.style.transition='bottom 0.3s ease-out';
+  el.style.bottom='16%';
+
+  document.getElementById('lakmusResults').style.display='block';
+  document.getElementById('lbStrip').style.background=exp.lakmusBColor;
+
+  document.getElementById('resultRow').style.display='flex';
+  const rv=document.getElementById('resLBVal');
+  rv.textContent=exp.lakmusB==='Tetap Biru'?'Biru':'Merah';
+  rv.style.color=exp.lakmusBColor;
+  const lbBox=document.getElementById('resLB');
+  lbBox.classList.add('revealed');
+  lbBox.style.borderColor=exp.lakmusBColor+'55';
+  lbBox.style.background=exp.lakmusBColor+'14';
+
+  updateTable(currentExp,'lb',exp.lakmusB,exp.lakmusBColor);
+
+  lakBDone=true;animating=false;
+  document.getElementById('expStatus').textContent='🔵 Lakmus biru selesai!';
+  if(lakMDone&&phDone)doAllDone();
+}
+
+async function doPHMeter(){
+  if(animating||!poured||phDone)return;
+  animating=true;playClick();
+  const exp=experiments[currentExp];
+  const el=document.getElementById('phmeter');
+  // Move pH meter to center of beaker
+  el.style.transition='all 0.5s cubic-bezier(.34,1.1,.64,1)';
+  el.style.right='auto';
+  el.style.left='50%';
+  el.style.bottom='40%';
+  el.style.transform='translateX(-50%)';
+  await sleep(550);
+
+  // Celupkan pH meter menyentuh larutan dalam beaker
+  el.style.transition='bottom 0.4s ease-in';
+  el.style.bottom='21%';
+  await sleep(430);
+  playDip();
+
+  // Animate pH counting
+  const phReading=document.getElementById('phReading');
+  const phEl=document.getElementById('phValue');
+  const typeEl=document.getElementById('phType');
+  phReading.style.display='block';
+  phEl.textContent='···';
+  await sleep(450);
+
+  let count=0;
+  const target=exp.pH;
+  const iv=setInterval(()=>{
+    count=Math.min(count+0.18,target);
+    phEl.textContent=count.toFixed(1).replace('.',',');
+    playBeep(280+count*55);
+    if(count>=target)clearInterval(iv);
+  },75);
+  await sleep(1400);
+  phEl.textContent=exp.pHDisplay;
+  typeEl.textContent=exp.type.toUpperCase();
+  typeEl.style.color=exp.typeColor;
+
+  await sleep(250);
+  el.style.bottom='23%';
+
+  document.getElementById('resultRow').style.display='flex';
+  const pv=document.getElementById('resPHVal');
+  pv.textContent=exp.pHDisplay;
+  pv.style.color=exp.typeColor;
+  document.getElementById('resPH').classList.add('revealed');
+  document.getElementById('resPH').style.borderColor=exp.typeColor+'55';
+  document.getElementById('resPH').style.background=exp.typeColor+'14';
+
+  const sv=document.getElementById('resSifatVal');
+  const sifatCap=exp.type.charAt(0).toUpperCase()+exp.type.slice(1);
+  sv.textContent=sifatCap;
+  sv.style.color=exp.typeColor;
+  document.getElementById('resSifat').classList.add('revealed');
+  document.getElementById('resSifat').style.borderColor=exp.typeColor+'55';
+  document.getElementById('resSifat').style.background=exp.typeColor+'14';
+
+  updateTable(currentExp,'ph',exp.pHDisplay,exp.typeColor);
+  updateTable(currentExp,'sf',sifatCap,exp.typeColor);
+
+  phDone=true;animating=false;
+  document.getElementById('expStatus').textContent=`📊 pH = ${exp.pHDisplay} → ${exp.type.toUpperCase()}`;
+  if(lakMDone&&lakBDone)doAllDone();
+}
+
+function doAllDone(){
+  playSuccess();
+  document.getElementById('expStatus').textContent=`✅ Percobaan ${experiments[currentExp].id} selesai! Lihat Tabel Pengamatan.`;
+}
+
+function updateTable(expIdx,type,val,color){
+  document.querySelectorAll('.td-'+type+'-'+expIdx).forEach(td=>{
+    td.textContent=val;td.style.color=color;td.style.fontWeight='700';
+  });
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+// ===================== PDF / PRINT =====================
+function downloadTabelPDF(){
+  playClick();
+  document.getElementById('tabelPrintHeader').style.display='block';
+  const style=document.createElement('style');
+  style.id='printStyleTemp';
+  style.textContent=`
+    @media print{
+      *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+      body>*:not(#app){display:none!important;}
+      #app>*{display:none!important;}
+      #page-tabel{display:block!important;position:static!important;overflow:visible!important;}
+      #page-tabel .scroll{overflow:visible!important;padding:0!important;}
+      header,nav{display:none!important;}
+      .btn-pdf{display:none!important;}
+      .obs-table th{background:#0369a1!important;color:#fff!important;}
+    }
+  `;
+  document.head.appendChild(style);
+  window.print();
+  setTimeout(()=>{
+    document.head.removeChild(style);
+    document.getElementById('tabelPrintHeader').style.display='none';
+  },1500);
+}
+
+function downloadDiskusiPDF(){
+  playClick();
+  document.getElementById('diskusiPrintHeader').style.display='block';
+  const style=document.createElement('style');
+  style.id='printStyleTemp2';
+  style.textContent=`
+    @media print{
+      *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+      body>*:not(#app){display:none!important;}
+      #app>*{display:none!important;}
+      #page-diskusi{display:block!important;position:static!important;overflow:visible!important;}
+      #page-diskusi .scroll{overflow:visible!important;padding:0!important;}
+      header,nav{display:none!important;}
+      .btn-pdf,.btn-submit,#submitNotice{display:none!important;}
+      .disc-area{border:1px solid #999!important;min-height:60px!important;}
+    }
+  `;
+  document.head.appendChild(style);
+  window.print();
+  setTimeout(()=>{
+    document.head.removeChild(style);
+    document.getElementById('diskusiPrintHeader').style.display='none';
+  },1500);
+}
+
+function submitDiskusi(){
+  playClick();
+  const a1=document.getElementById('ans1').value.trim();
+  const a2=document.getElementById('ans2').value.trim();
+  const a3=document.getElementById('ans3').value.trim();
+  const a4=document.getElementById('ans4').value.trim();
+  if(!a1&&!a2&&!a3&&!a4){
+    alert('Harap isi minimal satu jawaban sebelum mengumpulkan!');
+    return;
+  }
+  playSuccess();
+  document.getElementById('submitNotice').style.display='block';
+  document.getElementById('submitNotice').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// ===================== CLICK AUDIO =====================
+document.addEventListener('click',function(e){
+  const el=e.target.closest('button,.nb,.proc-tab,.exp-btn');
+  if(!el)return;
+  playClick();
+},{passive:true});
+
+// INIT
+window.addEventListener('load',()=>{
+  selectExp(0,document.getElementById('expBtn0'));
+});
+</script>
+</body>
+</html>
