@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Lab Maya Kimia – Daya Hantar Listrik Larutan</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@700;800&display=swap');
+:root{
+  --bg:#0a0f1e;--surf:#111827;--surf2:#1a2235;--surf3:#1f2d45;
+  --border:rgba(99,179,237,0.15);--border2:rgba(99,179,237,0.3);
+  --acc:#38bdf8;--acc2:#0ea5e9;--acc3:#7dd3fc;
+  --gold:#f59e0b;--green:#10b981;--red:#ef4444;--purple:#a78bfa;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+  --h:52px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{height:100%;overflow:hidden;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;
+  width:100vw;height:100vh;overflow:hidden;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+/* Touch-friendly tap targets */
+button{touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
+textarea{touch-action:pan-y;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 10% 0%,rgba(56,189,248,0.08) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 60% at 90% 100%,rgba(167,139,250,0.06) 0%,transparent 60%),
+    repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(99,179,237,0.04) 60px),
+    repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(99,179,237,0.04) 60px);
+}
+
+/* ── LOADING ── */
+#loadScreen{position:fixed;inset:0;z-index:99999;
+  background:linear-gradient(135deg,#020817 0%,#0a1628 40%,#0f2040 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;transition:opacity .7s ease;}
+#loadScreen.hide{opacity:0;pointer-events:none;}
+.load-img{width:clamp(140px,18vw,200px);margin-bottom:18px;border-radius:16px;box-shadow:0 0 60px rgba(56,189,248,0.3);animation:pulse-glow 2s ease-in-out infinite;}
+@keyframes pulse-glow{0%,100%{box-shadow:0 0 40px rgba(56,189,248,0.2);}50%{box-shadow:0 0 80px rgba(56,189,248,0.5);}}
+.load-title{font-family:'Playfair Display',serif;font-size:clamp(22px,3vw,34px);font-weight:800;color:#fff;text-align:center;margin-bottom:4px;letter-spacing:.02em;}
+.load-sub{font-family:'DM Mono',monospace;font-size:clamp(10px,1.2vw,13px);color:var(--acc3);letter-spacing:.2em;text-transform:uppercase;text-align:center;margin-bottom:28px;}
+.load-bar-wrap{width:clamp(220px,32vw,380px);height:5px;background:rgba(255,255,255,0.1);border-radius:6px;overflow:hidden;margin-bottom:8px;}
+.load-bar-slide{height:100%;width:0%;background:linear-gradient(90deg,#38bdf8,#7dd3fc,#38bdf8);background-size:200%;border-radius:6px;transition:width .1s linear;animation:shimmer 1.5s linear infinite;}
+@keyframes shimmer{0%{background-position:0%}100%{background-position:200%}}
+.load-percent{font-family:'DM Mono',monospace;font-size:clamp(13px,1.5vw,16px);color:#fff;font-weight:500;margin-bottom:6px;text-align:center;}
+.load-status{font-size:clamp(11px,1.2vw,13px);color:#94a3b8;margin-bottom:32px;min-height:18px;text-align:center;}
+#btnMulai{display:none;background:linear-gradient(135deg,#0ea5e9,#38bdf8);color:#fff;border:none;border-radius:12px;padding:12px 36px;font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(13px,1.4vw,15px);font-weight:700;cursor:pointer;letter-spacing:.04em;box-shadow:0 0 30px rgba(56,189,248,0.5);animation:btnPop .4s cubic-bezier(.34,1.56,.64,1) forwards;transition:transform .2s,box-shadow .2s;}
+#btnMulai:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 0 50px rgba(56,189,248,0.7);}
+@keyframes btnPop{from{opacity:0;transform:scale(0.7);}to{opacity:1;transform:scale(1);}}
+
+/* ── HEADER ── */
+header{position:relative;z-index:10;height:var(--h);flex-shrink:0;
+  background:rgba(10,15,30,0.95);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 12px;gap:10px;
+  box-shadow:0 2px 20px rgba(0,0,0,0.5);}
+.logo{display:flex;align-items:center;gap:9px;flex-shrink:0;}
+.logo-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 14px rgba(56,189,248,0.4);}
+.logo-text{font-family:'Playfair Display',serif;font-size:clamp(13px,1.6vw,17px);font-weight:800;color:#fff;line-height:1;}
+.logo-sub{font-size:9px;color:var(--text3);letter-spacing:.08em;}
+nav{display:flex;gap:1px;flex:1;overflow-x:auto;}
+nav::-webkit-scrollbar{display:none;}
+.nb{position:relative;background:none;border:none;color:var(--text2);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(11px,1.1vw,13px);font-weight:600;padding:0 12px;height:var(--h);white-space:nowrap;transition:color .2s;display:flex;align-items:center;gap:6px;}
+.nb::after{content:'';position:absolute;bottom:0;left:8px;right:8px;height:2px;background:var(--acc);transform:scaleX(0);transition:transform .2s;border-radius:2px 2px 0 0;}
+.nb:hover{color:#fff;}
+.nb.active{color:#fff;}
+.nb.active::after{transform:scaleX(1);}
+.nb-icon{font-size:14px;}
+
+#menuToggle{display:none;background:none;border:none;cursor:pointer;padding:6px;color:#fff;flex-shrink:0;}
+@media(max-width:640px){
+  #menuToggle{display:flex;align-items:center;margin-left:auto;}
+  nav{display:none;flex-direction:column;position:fixed;top:var(--h);right:0;left:0;z-index:999;background:rgba(10,15,30,0.98);border-bottom:1px solid var(--border);box-shadow:0 8px 24px rgba(0,0,0,0.5);overflow:visible;gap:0;flex:none;}
+  nav.open{display:flex;}
+  .nb{height:48px;width:100%;text-align:left;padding:0 16px;border-bottom:1px solid var(--border);}
+  .nb::after{display:none;}
+  .nb.active{background:rgba(56,189,248,0.08);}
+}
+
+/* ── APP ── */
+#app{position:relative;z-index:1;flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.page{display:none;flex:1;overflow:hidden;}
+.page.active{display:flex;flex-direction:column;animation:fu .22s ease;}
+@keyframes fu{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.scroll{flex:1;overflow-y:auto;padding:10px 14px 14px;}
+.scroll::-webkit-scrollbar{width:4px;}
+.scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* ── CARDS ── */
+.card{background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+.card:hover{border-color:var(--border2);}
+.ch{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.ci{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.ci.blue{background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.2);}
+.ci.green{background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.2);}
+.ci.gold{background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.2);}
+.ci.red{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.2);}
+.ci.purple{background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.2);}
+.ct{font-family:'Playfair Display',serif;font-size:clamp(12px,1.4vw,15px);font-weight:700;color:var(--acc3);}
+.card p{font-size:clamp(12px,1.2vw,13.5px);line-height:1.75;color:var(--text2);margin-bottom:5px;}
+.card p:last-child{margin-bottom:0;}
+.card h4{font-size:clamp(10px,1vw,11.5px);font-weight:700;color:var(--acc);letter-spacing:.1em;text-transform:uppercase;margin:10px 0 5px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+
+/* ── SAMPUL (COVER) ── */
+#page-sampul .scroll{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+.cover-wrap{display:flex;flex-direction:column;align-items:center;gap:0;width:100%;max-width:700px;text-align:center;}
+.cover-img-wrap{margin-bottom:18px;}
+.cover-img{width:clamp(180px,28vw,280px);border-radius:20px;box-shadow:0 0 60px rgba(56,189,248,0.3);animation:pulse-glow 3s ease-in-out infinite;}
+.cover-badge{display:inline-block;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--acc);text-transform:uppercase;background:rgba(56,189,248,0.08);border:1px solid var(--border2);border-radius:6px;padding:4px 12px;margin-bottom:14px;}
+.cover-title{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,42px);font-weight:800;color:#fff;line-height:1.2;margin-bottom:10px;}
+.cover-title span{color:var(--acc);}
+.cover-desc{font-size:clamp(12px,1.3vw,14.5px);color:var(--text2);line-height:1.8;max-width:560px;margin-bottom:20px;}
+.cover-tags{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:20px;}
+.tag{border-radius:20px;padding:4px 14px;font-size:11px;font-weight:600;letter-spacing:.04em;}
+.tag-b{background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.25);color:var(--acc3);}
+.tag-g{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:#34d399;}
+.tag-p{background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.25);color:#c4b5fd;}
+.btn-mulai-lab{background:linear-gradient(135deg,#0ea5e9,#38bdf8);color:#fff;border:none;border-radius:10px;padding:11px 30px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;box-shadow:0 0 24px rgba(56,189,248,0.4);transition:all .2s;letter-spacing:.03em;}
+.btn-mulai-lab:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(56,189,248,0.6);}
+.tujuan-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;width:100%;margin-top:16px;text-align:left;}
+.tujuan-item{background:var(--surf);border:1px solid var(--border);border-radius:9px;padding:10px 12px;display:flex;gap:8px;}
+.tujuan-num{font-family:'DM Mono',monospace;font-size:12px;color:var(--acc);font-weight:500;flex-shrink:0;margin-top:1px;}
+.tujuan-item p{font-size:11.5px;color:var(--text2);line-height:1.6;margin:0;}
+
+/* ── TEORI ── */
+#page-teori .scroll{overflow:hidden;display:flex;flex-direction:column;}
+#page-teori .card{margin-bottom:5px;padding:9px 12px;}
+#page-teori .card p{font-size:clamp(11px,1.05vw,12.5px);line-height:1.6;margin-bottom:4px;}
+#page-teori .card h4{margin:6px 0 3px;}
+.teori-hero{background:linear-gradient(135deg,rgba(14,165,233,0.15),rgba(56,189,248,0.05));border:1px solid var(--border2);border-radius:10px;padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;gap:16px;flex-shrink:0;}
+.teori-hero-img{width:clamp(60px,8vw,90px);flex-shrink:0;border-radius:8px;}
+.teori-hero-text h2{font-family:'Playfair Display',serif;font-size:clamp(14px,1.8vw,19px);color:#fff;margin-bottom:4px;}
+.teori-hero-text p{font-size:11.5px;color:var(--text2);line-height:1.6;max-width:600px;}
+.ion-diagram{display:flex;justify-content:center;gap:14px;margin:8px 0;flex-wrap:wrap;}
+.ion-box{background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;text-align:center;min-width:100px;}
+.ion-formula{font-family:'DM Mono',monospace;font-size:clamp(11px,1.3vw,15px);font-weight:500;color:var(--acc);margin-bottom:3px;}
+.ion-label{font-size:10px;color:var(--text3);}
+.badge-kategori{display:inline-block;padding:2px 9px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.06em;margin-right:5px;margin-bottom:4px;}
+.badge-kuat{background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.3);color:var(--acc3);}
+.badge-lemah{background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);color:#fbbf24;}
+.badge-non{background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#f87171;}
+.teori-img-row{display:flex;gap:10px;margin:6px 0;align-items:center;}
+.teori-img-row img{border-radius:8px;height:80px;object-fit:contain;background:rgba(255,255,255,0.04);padding:4px;}
+
+/* ── ALAT & BAHAN ── */
+#page-alatbahan .scroll{overflow:hidden;display:flex;flex-direction:column;}
+.ab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:7px;margin-top:6px;}
+.ab-item{background:var(--surf2);border:1px solid var(--border);border-radius:9px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:7px;transition:border-color .2s,transform .2s,box-shadow .2s;cursor:default;}
+.ab-item:hover{border-color:var(--acc);transform:translateY(-2px);box-shadow:0 6px 20px rgba(56,189,248,0.15);}
+.ab-item img{width:70px;height:70px;object-fit:contain;}
+.ab-item-name{font-size:11px;font-weight:600;color:var(--text);text-align:center;line-height:1.4;}
+.ab-item-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--acc);text-align:center;}
+.ab-section-title{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:var(--acc3);margin:8px 0 4px;display:flex;align-items:center;gap:6px;}
+
+/* ── PROSEDUR ── */
+.proc-tabs{display:flex;gap:5px;margin-bottom:8px;flex-wrap:wrap;flex-shrink:0;}
+.proc-tab{background:var(--surf2);border:1px solid var(--border);border-radius:7px;padding:5px 12px;font-size:11.5px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px;}
+.proc-tab:hover{border-color:var(--acc2);color:var(--text);}
+.proc-tab.active{background:rgba(56,189,248,0.1);border-color:var(--acc);color:var(--acc3);}
+.proc-content{display:none;}
+.proc-content.active{display:flex;flex-direction:column;gap:6px;}
+.proc-header{background:linear-gradient(135deg,rgba(14,165,233,0.12),rgba(56,189,248,0.04));border:1px solid var(--border2);border-radius:9px;padding:10px 14px;display:flex;align-items:center;gap:12px;}
+.proc-larutan-img{height:55px;object-fit:contain;border-radius:6px;background:rgba(255,255,255,0.04);padding:3px;}
+.proc-header-info h3{font-family:'Playfair Display',serif;font-size:clamp(13px,1.6vw,16px);color:#fff;margin-bottom:3px;}
+.proc-header-info p{font-size:11.5px;color:var(--text2);}
+.steps-list{display:flex;flex-direction:column;gap:5px;}
+.step-item{display:flex;gap:10px;align-items:flex-start;background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;transition:border-color .17s;}
+.step-item:hover{border-color:var(--acc2);background:rgba(56,189,248,0.04);}
+.step-num{min-width:22px;height:22px;border-radius:50%;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.25);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:9.5px;color:var(--acc);flex-shrink:0;}
+.step-item p{font-size:clamp(11.5px,1.2vw,13px);color:var(--text2);line-height:1.65;margin:0;}
+.step-sym{font-size:16px;margin-top:1px;}
+.amati-box{background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.25);border-radius:8px;padding:8px 12px;display:flex;gap:14px;flex-wrap:wrap;}
+.amati-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#fbbf24;}
+.amati-item span{color:var(--text2);}
+
+/* ── SIMULASI ── */
+.sim-outer{flex:1;display:grid;grid-template-columns:190px 1fr;gap:8px;min-height:0;padding:10px 14px 14px;overflow:hidden;}
+.sim-ctrl{background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:9px;overflow-y:auto;}
+.sim-ctrl h3{font-family:'Playfair Display',serif;font-size:13px;color:var(--acc3);}
+.ctrl-label{font-size:9.5px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+.exp-btn{width:100%;background:var(--surf2);border:1px solid var(--border);border-radius:7px;padding:7px 10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;text-align:left;transition:all .2s;display:flex;align-items:center;gap:6px;line-height:1.3;}
+.exp-btn:hover{border-color:var(--acc2);color:var(--text);}
+.exp-btn.active{background:rgba(56,189,248,0.1);border-color:var(--acc);color:var(--acc3);}
+.exp-btn .exp-num{font-family:'DM Mono',monospace;font-size:9px;width:18px;height:18px;border-radius:4px;background:rgba(56,189,248,0.15);color:var(--acc);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.btn-sim{width:100%;border:none;border-radius:7px;padding:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11.5px;font-weight:700;cursor:pointer;transition:all .18s;letter-spacing:.03em;}
+.btn-run{background:linear-gradient(135deg,#0ea5e9,#38bdf8);color:#fff;box-shadow:0 2px 10px rgba(56,189,248,0.3);}
+.btn-run:hover{transform:translateY(-1px);box-shadow:0 4px 18px rgba(56,189,248,0.4);}
+.btn-run:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+.btn-rst{background:var(--surf2);border:1px solid var(--border);color:var(--text2);}
+.btn-rst:hover{border-color:var(--acc);color:var(--acc);}
+.sim-main{display:flex;flex-direction:column;gap:8px;overflow:hidden;}
+.sim-canvas-wrap{background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:10px;flex:1;display:flex;flex-direction:column;min-height:0;}
+.sim-canvas-wrap h3{font-family:'Playfair Display',serif;font-size:12px;color:var(--acc3);margin-bottom:6px;flex-shrink:0;}
+#simCanvas{width:100%;flex:1;border-radius:8px;background:#070d1a;border:1px solid var(--border);display:block;}
+.sim-result{background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:10px 14px;flex-shrink:0;display:none;}
+.sim-result.show{display:flex;gap:14px;align-items:center;flex-wrap:wrap;animation:fu .3s ease;}
+.result-badge{display:flex;align-items:center;gap:7px;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;flex-shrink:0;}
+.result-kuat{background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);color:var(--acc3);}
+.result-lemah{background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);color:#fbbf24;}
+.result-non{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#f87171;}
+.result-detail{font-size:11.5px;color:var(--text2);line-height:1.65;flex:1;}
+.result-indicators{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;}
+.ri{display:flex;flex-direction:column;align-items:center;gap:3px;background:var(--surf2);border:1px solid var(--border);border-radius:7px;padding:6px 10px;min-width:72px;}
+.ri-val{font-size:16px;}
+.ri-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
+.ri-txt{font-size:10.5px;font-weight:600;}
+
+/* ── DISKUSI ── */
+.disc-q{background:var(--surf);border:1px solid var(--border);border-radius:9px;padding:12px 14px;margin-bottom:8px;}
+.disc-q .dq-num{font-family:'DM Mono',monospace;font-size:9px;color:var(--acc);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;}
+.disc-q .dq-text{font-size:clamp(12px,1.3vw,13.5px);color:var(--text);line-height:1.7;margin-bottom:8px;font-weight:500;}
+.disc-area{width:100%;background:var(--surf2);border:1px solid var(--border);border-radius:7px;padding:9px 11px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:var(--text);resize:vertical;outline:none;min-height:70px;transition:border-color .17s;line-height:1.6;}
+.disc-area:focus{border-color:var(--acc);box-shadow:0 0 0 2px rgba(56,189,248,0.1);}
+.disc-submit{margin-top:12px;background:linear-gradient(135deg,#0ea5e9,#38bdf8);color:#fff;border:none;border-radius:8px;padding:9px 24px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer;box-shadow:0 2px 12px rgba(56,189,248,0.3);transition:all .2s;display:block;margin-left:auto;}
+.disc-submit:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(56,189,248,0.4);}
+.disc-saved{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);border-radius:7px;padding:7px 12px;font-size:11.5px;color:#34d399;display:none;margin-top:8px;}
+.disc-saved.show{display:block;animation:fu .3s ease;}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loadScreen">
+  <img class="load-img" src="https://yulinestiyarum.github.io/dayahantarlistrik/sampulujielektrolit.png" alt="Daya Hantar Listrik" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22><rect fill=%22%230a1628%22 width=%22200%22 height=%22200%22 rx=%2220%22/><text y=%22.9em%22 font-size=%2280%22 x=%2250%22>⚡</text></svg>'">
+  <div class="load-title">Lab Maya Kimia</div>
+  <div class="load-sub">Daya Hantar Listrik Larutan</div>
+  <div class="load-bar-wrap"><div class="load-bar-slide" id="loadBar"></div></div>
+  <div class="load-percent" id="loadPct">0%</div>
+  <div class="load-status" id="loadStatus">Memuat laboratorium virtual…</div>
+  <button id="btnMulai" onclick="startLab()">⚡ Mulai Praktikum</button>
+</div>
+
+<script>
+(function(){
+  const bar=document.getElementById('loadBar');
+  const pct=document.getElementById('loadPct');
+  const status=document.getElementById('loadStatus');
+  const msgs=['Memuat laboratorium virtual…','Menyiapkan alat uji elektrolit…','Mengisi larutan percobaan…','Mengkalibrasi elektroda karbon…','Laboratorium siap digunakan!'];
+  let cur=0;const total=3200;const step=30;const inc=100/(total/step);
+  const iv=setInterval(()=>{
+    cur=Math.min(100,cur+inc);
+    const v=Math.floor(cur);
+    bar.style.width=v+'%';pct.textContent=v+'%';
+    const mi=Math.floor(v/25);status.textContent=msgs[Math.min(mi,msgs.length-1)];
+    if(cur>=100){clearInterval(iv);pct.textContent='100%';status.textContent='✅ Laboratorium siap digunakan!';
+      setTimeout(()=>{document.getElementById('btnMulai').style.display='block';},500);}
+  },step);
+})();
+function startLab(){
+  playClickSound();
+  document.getElementById('loadScreen').classList.add('hide');
+  setTimeout(()=>{document.getElementById('loadScreen').style.display='none';},700);
+}
+</script>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">⚡</div>
+    <div><div class="logo-text">Lab Maya Kimia</div><div class="logo-sub">DAYA HANTAR LISTRIK LARUTAN</div></div>
+  </div>
+  <button id="menuToggle" onclick="toggleNav()" aria-label="Menu">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><line x1="2" y1="5" x2="18" y2="5"/><line x1="2" y1="10" x2="18" y2="10"/><line x1="2" y1="15" x2="18" y2="15"/></svg>
+  </button>
+  <nav id="mainNav">
+    <button class="nb active" onclick="show('sampul',this);closeNav()"><span class="nb-icon">🏠</span>Sampul</button>
+    <button class="nb" onclick="show('tujuan',this);closeNav()"><span class="nb-icon">🎯</span>Tujuan</button>
+    <button class="nb" onclick="show('teori',this);closeNav()"><span class="nb-icon">📖</span>Teori</button>
+    <button class="nb" onclick="show('alatbahan',this);closeNav()"><span class="nb-icon">🧪</span>Alat &amp; Bahan</button>
+    <button class="nb" onclick="show('prosedur',this);closeNav()"><span class="nb-icon">📋</span>Prosedur</button>
+    <button class="nb" onclick="show('simulasi',this);closeNav()"><span class="nb-icon">🔬</span>Simulasi</button>
+    <button class="nb" onclick="show('diskusi',this);closeNav()"><span class="nb-icon">💬</span>Diskusi</button>
+  </nav>
+</header>
+
+<div id="app">
+
+<!-- ══ SAMPUL ══ -->
+<div id="page-sampul" class="page active">
+<div class="scroll" style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
+  <div class="cover-wrap">
+    <div class="cover-img-wrap">
+      <img class="cover-img" src="https://yulinestiyarum.github.io/dayahantarlistrik/sampulujielektrolit.png" alt="Elektrolit" onerror="this.style.display='none'">
+    </div>
+    <div class="cover-title">Daya Hantar <span>Listrik</span> Larutan</div>
+    <div class="cover-desc">Laboratorium virtual interaktif untuk mempelajari kemampuan larutan dalam menghantarkan arus listrik melalui pengujian dengan alat uji elektrolit.</div>
+    <div class="cover-tags">
+      <div class="tag tag-b">⚡ Elektrolit Kuat</div>
+      <div class="tag tag-p">⚡ Elektrolit Lemah</div>
+      <div class="tag tag-g">❌ Nonelektrolit</div>
+    </div>
+    <button class="btn-mulai-lab" onclick="show('tujuan',document.querySelectorAll('.nb')[1]);playClickSound()">Mulai Belajar →</button>
+  </div>
+</div>
+</div>
+
+<!-- ══ TUJUAN ══ -->
+<div id="page-tujuan" class="page">
+<div class="scroll" style="overflow-y:auto;display:flex;flex-direction:column;">
+
+  <!-- Tujuan Pembelajaran -->
+  <div class="card" style="margin-bottom:8px;background:linear-gradient(135deg,rgba(14,165,233,0.13),rgba(56,189,248,0.04));border-color:var(--border2);">
+    <div class="ch"><div class="ci blue">🎓</div><div class="ct">Tujuan Pembelajaran</div></div>
+    <div style="display:flex;gap:12px;align-items:flex-start;padding:4px 0;">
+      <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;box-shadow:0 0 16px rgba(56,189,248,0.35);">🎯</div>
+      <p style="font-size:clamp(12.5px,1.4vw,15px);color:var(--text);line-height:1.8;font-weight:500;margin:0;padding-top:4px;">Menganalisis daya hantar listrik dan sifat koligatif larutan serta penerapannya.</p>
+    </div>
+  </div>
+
+  <!-- Tujuan Percobaan -->
+  <div class="card" style="margin-bottom:8px;">
+    <div class="ch"><div class="ci gold">🔬</div><div class="ct">Tujuan Percobaan</div></div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+      <div style="display:flex;gap:12px;align-items:flex-start;background:var(--surf2);border:1px solid var(--border);border-radius:9px;padding:10px 14px;">
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--acc);font-weight:600;flex-shrink:0;width:22px;text-align:center;background:rgba(56,189,248,0.1);border-radius:5px;padding:3px 0;">01</div>
+        <p style="font-size:clamp(12px,1.25vw,14px);color:var(--text2);line-height:1.75;margin:0;">Mengidentifikasi larutan yang dapat dan tidak dapat menghantarkan arus listrik.</p>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;background:var(--surf2);border:1px solid var(--border);border-radius:9px;padding:10px 14px;">
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--acc);font-weight:600;flex-shrink:0;width:22px;text-align:center;background:rgba(56,189,248,0.1);border-radius:5px;padding:3px 0;">02</div>
+        <p style="font-size:clamp(12px,1.25vw,14px);color:var(--text2);line-height:1.75;margin:0;">Mengelompokkan larutan menjadi elektrolit kuat, elektrolit lemah, dan nonelektrolit berdasarkan hasil pengamatan (nyala lampu dan gelembung gas).</p>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;background:var(--surf2);border:1px solid var(--border);border-radius:9px;padding:10px 14px;">
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--acc);font-weight:600;flex-shrink:0;width:22px;text-align:center;background:rgba(56,189,248,0.1);border-radius:5px;padding:3px 0;">03</div>
+        <p style="font-size:clamp(12px,1.25vw,14px);color:var(--text2);line-height:1.75;margin:0;">Menganalisis daya hantar listrik larutan berdasarkan data percobaan.</p>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;background:var(--surf2);border:1px solid var(--border);border-radius:9px;padding:10px 14px;">
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--acc);font-weight:600;flex-shrink:0;width:22px;text-align:center;background:rgba(56,189,248,0.1);border-radius:5px;padding:3px 0;">04</div>
+        <p style="font-size:clamp(12px,1.25vw,14px);color:var(--text2);line-height:1.75;margin:0;">Menyimpulkan penyebab suatu larutan dapat menghantarkan listrik berdasarkan data hasil percobaan.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hasil Belajar -->
+  <div class="card" style="margin-bottom:8px;">
+    <div class="ch"><div class="ci green">✅</div><div class="ct">Hasil Belajar yang Diharapkan</div></div>
+    <div class="two-col" style="gap:6px;margin-top:4px;">
+      <div style="background:var(--surf2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;">
+        <div style="font-size:10px;font-weight:700;color:var(--acc);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">🧠 Kognitif</div>
+        <p style="font-size:clamp(11px,1.1vw,12.5px);color:var(--text2);line-height:1.7;margin-bottom:5px;">Mampu mengklasifikasikan berbagai sampel larutan ke dalam kelompok elektrolit kuat, elektrolit lemah, dan nonelektrolit dengan benar.</p>
+        <p style="font-size:clamp(11px,1.1vw,12.5px);color:var(--text2);line-height:1.7;margin:0;">Mampu menjelaskan alasan mengapa suatu larutan dapat menghantarkan arus listrik berdasarkan teori ionisasi.</p>
+      </div>
+      <div style="background:var(--surf2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;">
+        <div style="font-size:10px;font-weight:700;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">⚗️ Psikomotorik</div>
+        <p style="font-size:clamp(11px,1.1vw,12.5px);color:var(--text2);line-height:1.7;margin-bottom:5px;">Terampil merangkai dan menggunakan alat uji daya hantar listrik sederhana dengan baik dan aman.</p>
+        <div style="font-size:10px;font-weight:700;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin:8px 0 6px;">🌟 Afektif</div>
+        <p style="font-size:clamp(11px,1.1vw,12.5px);color:var(--text2);line-height:1.7;margin:0;">Menunjukkan sikap teliti, objektif, dan kritis dalam mengamati serta mencatat data hasil percobaan.</p>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-mulai-lab" style="align-self:flex-start;margin-top:4px;" onclick="show('teori',document.querySelectorAll('.nb')[2]);playClickSound()">Lanjut ke Teori →</button>
+
+</div>
+</div>
+
+<!-- ══ TEORI ══ -->
+<div id="page-teori" class="page">
+<div class="scroll" style="display:flex;flex-direction:column;overflow-y:auto;">
+  <div class="teori-hero">
+    <img class="teori-hero-img" src="https://yulinestiyarum.github.io/dayahantarlistrik/alatujilarutan.png" alt="Alat Uji" onerror="this.style.display='none'">
+    <div class="teori-hero-text">
+      <h2>Teori Ionisasi — Svante Arrhenius</h2>
+      <p>Kemampuan suatu larutan menghantarkan listrik dijelaskan oleh ilmuwan Svante Arrhenius melalui Teori Ionisasi. Larutan yang mengandung ion-ion bermuatan bebas dapat menghantarkan arus listrik.</p>
+    </div>
+  </div>
+  <div class="two-col" style="gap:6px;margin-bottom:6px;">
+    <div class="card">
+      <div class="ch"><div class="ci blue">⚡</div><div class="ct">Larutan Elektrolit</div></div>
+      <p>Larutan yang dapat menghantarkan arus listrik karena zat terlarut terurai (terionisasi) menjadi ion-ion bermuatan — kation (+) dan anion (−). Ion-ion ini bergerak bebas dan berfungsi sebagai penghantar arus.</p>
+      <div class="ion-diagram">
+        <div class="ion-box"><div class="ion-formula">HCl</div><div class="ion-label">→ H⁺ + Cl⁻</div></div>
+        <div class="ion-box"><div class="ion-formula">NaOH</div><div class="ion-label">→ Na⁺ + OH⁻</div></div>
+        <div class="ion-box"><div class="ion-formula">NaCl</div><div class="ion-label">→ Na⁺ + Cl⁻</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ci red">🚫</div><div class="ct">Larutan Nonelektrolit</div></div>
+      <p>Larutan yang sama sekali tidak dapat menghantarkan arus listrik. Zat terlarut tidak mengalami ionisasi (α = 0), tetap dalam wujud molekul-molekul netral. Tidak ada ion yang bergerak bebas.</p>
+      <h4>Ciri pengamatan</h4>
+      <p>🔦 Lampu tidak menyala &nbsp;|&nbsp; 💧 Tidak ada gelembung gas</p>
+      <h4>Contoh</h4>
+      <p>Larutan urea, larutan alkohol</p>
+    </div>
+  </div>
+  <div class="two-col" style="gap:6px;margin-bottom:6px;">
+    <div class="card">
+      <div class="ch"><div class="ci blue">💡</div><div class="ct">Elektrolit Kuat</div></div>
+      <span class="badge-kategori badge-kuat">α = 1</span>
+      <p>Zat terlarut terionisasi <strong style="color:var(--acc3)">sempurna</strong>. Menghasilkan sangat banyak ion bebas sehingga menjadi penghantar listrik yang baik.</p>
+      <h4>Ciri empiris</h4>
+      <p>💡 Lampu menyala <strong>terang</strong><br>🫧 Banyak gelembung gas di elektroda</p>
+      <h4>Contoh</h4>
+      <p>HCl, NaOH, NaCl</p>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ci gold">🔆</div><div class="ct">Elektrolit Lemah</div></div>
+      <span class="badge-kategori badge-lemah">0 &lt; α &lt; 1</span>
+      <p>Zat terlarut hanya terionisasi <strong style="color:#fbbf24">sebagian</strong>. Sedikit ion yang terbentuk sehingga daya hantar listriknya lemah.</p>
+      <h4>Ciri empiris</h4>
+      <p>🔆 Lampu menyala <strong>redup</strong> atau tidak menyala<br>🫧 Sedikit gelembung gas di elektroda</p>
+      <h4>Contoh</h4>
+      <p>CH₃COOH, NH₄OH</p>
+    </div>
+  </div>
+  <div class="card" style="flex-shrink:0;">
+    <div class="ch"><div class="ci purple">🔬</div><div class="ct">Cara Membaca Hasil Uji Elektrolit</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+      <div style="background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.2);border-radius:7px;padding:8px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:4px;">💡🫧🫧🫧</div>
+        <div style="font-size:11px;font-weight:700;color:var(--acc3);margin-bottom:3px;">Elektrolit Kuat</div>
+        <div style="font-size:10.5px;color:var(--text2);">Lampu terang + banyak gelembung</div>
+      </div>
+      <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:7px;padding:8px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:4px;">🔆🫧</div>
+        <div style="font-size:11px;font-weight:700;color:#fbbf24;margin-bottom:3px;">Elektrolit Lemah</div>
+        <div style="font-size:10.5px;color:var(--text2);">Lampu redup/mati + sedikit gelembung</div>
+      </div>
+      <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:7px;padding:8px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:4px;">🔴❌</div>
+        <div style="font-size:11px;font-weight:700;color:#f87171;margin-bottom:3px;">Nonelektrolit</div>
+        <div style="font-size:10.5px;color:var(--text2);">Lampu mati + tidak ada gelembung</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ ALAT & BAHAN ══ -->
+<div id="page-alatbahan" class="page">
+<div class="scroll" style="display:flex;flex-direction:column;overflow-y:auto;">
+  <div class="card" style="flex-shrink:0;">
+    <div class="ch"><div class="ci blue">🔧</div><div class="ct">Alat Percobaan</div></div>
+    <div class="ab-grid">
+      <div class="ab-item">
+        <img src="https://yulinestiyarum.github.io/Gelas-Kimia/Gelas-Kimia.png" alt="Gelas Kimia" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 70 70%22><text y=%2255%22 font-size=%2250%22>🧊</text></svg>'">
+        <div class="ab-item-name">Gelas Kimia</div>
+        <div class="ab-item-sub">Beaker Glass</div>
+      </div>
+      <div class="ab-item">
+        <img src="https://yulinestiyarum.github.io/dayahantarlistrik/alatujilarutan.png" alt="Alat Uji Elektrolit" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 70 70%22><text y=%2255%22 font-size=%2250%22>💡</text></svg>'">
+        <div class="ab-item-name">Alat Uji Elektrolit</div>
+        <div class="ab-item-sub">Baterai + Lampu + Elektroda</div>
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--text3);margin-top:8px;">Alat uji elektrolit terdiri dari: baterai, kabel penghubung, lampu indikator, dan dua batang elektroda karbon.</p>
+  </div>
+  <div class="card" style="flex:1;">
+    <div class="ch"><div class="ci green">🧴</div><div class="ct">Bahan Percobaan (6 Larutan)</div></div>
+    <div class="ab-grid">
+      <div class="ab-item">
+        <img src="https://yulinestiyarum.github.io/dayahantarlistrik/H2SO4.png" alt="H2SO4" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 70 70%22><text y=%2255%22 font-size=%2250%22>🧪</text></svg>'">
+        <div class="ab-item-name">Air Aki</div>
+        <div class="ab-item-sub">H₂SO₄</div>
+      </div>
+      <div class="ab-item">
+        <img src="https://yulinestiyarum.github.io/dayahantarlistrik/KOHnew.png" alt="KOH" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 70 70%22><text y=%2255%22 font-size=%2250%22>🧪</text></svg>'">
+        <div class="ab-item-name">Larutan KOH</div>
+        <div class="ab-item-sub">Kalium Hidroksida</div>
+      </div>
+      <div class="ab-item">
+        <img src="https://yulinestiyarum.github.io/dayahantarlistrik/CaCl2new.png" alt="CaCl2" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 70 70%22><text y=%2255%22 font-size=%2250%22>🧪</text></svg>'">
+        <div class="ab-item-name">Larutan CaCl₂</div>
+        <div class="ab-item-sub">Kalsium Klorida</div>
+      </div>
+      <div class="ab-item">
+        <img src="https://yulinestiyarum.github.io/dayahantarlistrik/HCOOHnew.png" alt="HCOOH" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 70 70%22><text y=%2255%22 font-size=%2250%22>🧪</text></svg>'">
+        <div class="ab-item-name">Larutan HCOOH</div>
+        <div class="ab-item-sub">Asam Format</div>
+      </div>
+      <div class="ab-item">
+        <img src="https://yulinestiyarum.github.io/dayahantarlistrik/airsabun.png" alt="Air Sabun" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 70 70%22><text y=%2255%22 font-size=%2250%22>🫧</text></svg>'">
+        <div class="ab-item-name">Air Sabun</div>
+        <div class="ab-item-sub">Larutan Sabun</div>
+      </div>
+      <div class="ab-item">
+        <img src="https://yulinestiyarum.github.io/dayahantarlistrik/airgula.png" alt="Larutan Gula" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 70 70%22><text y=%2255%22 font-size=%2250%22>🍬</text></svg>'">
+        <div class="ab-item-name">Larutan Gula</div>
+        <div class="ab-item-sub">Sukrosa, C₁₂H₂₂O₁₁</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ PROSEDUR ══ -->
+<div id="page-prosedur" class="page">
+<div class="scroll" style="overflow-y:auto;">
+  <div class="proc-tabs" id="procTabs">
+    <button class="proc-tab active" onclick="showProc(0,this)"><img src="https://yulinestiyarum.github.io/dayahantarlistrik/H2SO4.png" style="height:20px;vertical-align:middle;margin-right:4px;" onerror="this.style.display='none'">P-1 H₂SO₄</button>
+    <button class="proc-tab" onclick="showProc(1,this)"><img src="https://yulinestiyarum.github.io/dayahantarlistrik/KOHnew.png" style="height:20px;vertical-align:middle;margin-right:4px;" onerror="this.style.display='none'">P-2 KOH</button>
+    <button class="proc-tab" onclick="showProc(2,this)"><img src="https://yulinestiyarum.github.io/dayahantarlistrik/CaCl2new.png" style="height:20px;vertical-align:middle;margin-right:4px;" onerror="this.style.display='none'">P-3 CaCl₂</button>
+    <button class="proc-tab" onclick="showProc(3,this)"><img src="https://yulinestiyarum.github.io/dayahantarlistrik/HCOOHnew.png" style="height:20px;vertical-align:middle;margin-right:4px;" onerror="this.style.display='none'">P-4 HCOOH</button>
+    <button class="proc-tab" onclick="showProc(4,this)"><img src="https://yulinestiyarum.github.io/dayahantarlistrik/airsabun.png" style="height:20px;vertical-align:middle;margin-right:4px;" onerror="this.style.display='none'">P-5 Air Sabun</button>
+    <button class="proc-tab" onclick="showProc(5,this)"><img src="https://yulinestiyarum.github.io/dayahantarlistrik/airgula.png" style="height:20px;vertical-align:middle;margin-right:4px;" onerror="this.style.display='none'">P-6 Gula</button>
+  </div>
+
+  <!-- Percobaan 1 -->
+  <div class="proc-content active" id="proc-0">
+    <div class="proc-header">
+      <img class="proc-larutan-img" src="https://yulinestiyarum.github.io/dayahantarlistrik/H2SO4.png" alt="H2SO4" onerror="this.style.display='none'">
+      <img class="proc-larutan-img" src="https://yulinestiyarum.github.io/Gelas-Kimia/Gelas-Kimia.png" alt="Gelas Kimia" onerror="this.style.display='none'">
+      <img class="proc-larutan-img" src="https://yulinestiyarum.github.io/dayahantarlistrik/alatujilarutan.png" alt="Alat Uji" onerror="this.style.display='none'">
+      <div class="proc-header-info"><h3>Percobaan 1 — Air Aki (H₂SO₄)</h3><p>Menguji Daya Hantar Larutan Asam Sulfat</p></div>
+    </div>
+    <div class="steps-list">
+      <div class="step-item"><div class="step-num">1</div><p>💧 Tuangkan air aki (larutan Asam Sulfat, H₂SO₄) ke dalam gelas kimia.</p></div>
+      <div class="step-item"><div class="step-num">2</div><p>⚡ Celupkan kedua batang elektroda karbon ke dalam gelas kimia.</p></div>
+      <div class="step-item"><div class="step-num">3</div><p>✅ Pastikan kedua ujung elektroda tercelup cukup dalam ke larutan, tetapi jangan sampai saling bersentuhan satu sama lain di dalam gelas kimia.</p></div>
+      <div class="step-item"><div class="step-num">4</div><p>🔍 Amati dengan saksama dua hal berikut:</p></div>
+    </div>
+    <div class="amati-box">
+      <div class="amati-item">💡 <span>Lampu indikator: Apakah lampu menyala terang, menyala redup, atau tidak menyala sama sekali?</span></div>
+      <div class="amati-item">🫧 <span>Batang elektroda: Apakah terdapat banyak, sedikit, atau tidak ada gelembung gas di sekitar elektroda?</span></div>
+    </div>
+    <div class="step-item"><div class="step-num">5</div><p>📝 Tuliskan hasil pengamatan ke dalam Tabel Data Pengamatan pada LKPD.</p></div>
+  </div>
+
+  <!-- Percobaan 2 -->
+  <div class="proc-content" id="proc-1">
+    <div class="proc-header">
+      <img class="proc-larutan-img" src="https://yulinestiyarum.github.io/dayahantarlistrik/KOHnew.png" alt="KOH" onerror="this.style.display='none'">
+      <img class="proc-larutan-img" src="https://yulinestiyarum.github.io/Gelas-Kimia/Gelas-Kimia.png" alt="Gelas Kimia" onerror="this.style.display='none'">
+      <img class="proc-larutan-img" src="https://yulinestiyarum.github.io/dayahantarlistrik/alatujilarutan.png" alt="Alat Uji" onerror="this.style.display='none'">
+      <div class="proc-header-info"><h3>Percobaan 2 — Larutan KOH</h3><p>Menguji Daya Hantar Kalium Hidroksida</p></div>
+    </div>
+    <div class="steps-list">
+      <div class="step-item"><div class="step-num">1</div><p>💧 Tuangkan larutan KOH (Kalium Hidroksida) ke dalam gelas kimia.</p></div>
+      <div class="step-item"><div class="step-num">2</div><p>⚡ Celupkan kedua batang elektroda karbon ke dalam gelas kimia.</p></div>
+      <div class="step-item"><div class="step-num">3</div><p>✅ Pastikan kedua ujung elektroda tercelup cukup dalam ke larutan, tetapi jangan sampai saling bersentuhan satu sama lain di dalam gelas kimia.</p></div>
+      <div class="step-item"><div class="step-num">4</div><p>🔍 Amati dengan saksama dua hal berikut:</p></div>
+    </div>
+    <div class="amati-box">
+      <div class="amati-item">💡 <span>Lampu indikator: Apakah lampu menyala terang, menyala redup, atau tidak menyala sama sekali?</span></div>
+      <div class="amati-item">🫧 <span>Batang elektroda: Apakah terdapat banyak, sedikit, atau tidak ada gelembung gas di sekitar elektroda?</span></div>
+    </div>
+    <div class="step-item"><div class="step-num">5</div><p>📝 Tuliskan hasil pengamatan ke dalam Tabel Data Pengamatan pada LKPD.</p></div>
+  </div>
+
+  <!-- Percobaan 3 -->
+  <div class="proc-content" id="proc-2">
+    <div class="proc-header">
+      <img class="proc-larutan-img" src="https://yulinestiyarum.github.io/dayahantarlistrik/CaCl2new.png" alt="CaCl2" onerror="this.style.display='none'">
+      <img class="proc-larutan-img" src="https://yulinestiyarum.github.io/Gelas-Kimia/Gelas-Kimia.png" alt="Gelas Kimia" onerror="this.style.display='none'">
+      <img class="proc-larutan-img" src="https://yulinestiyarum.github.io/dayahantarlistrik/alatujilarutan.png" alt="Alat Uji" onerror="this.style.display='none'">
+      <div class="proc-header-info"><h3>Percobaan 3 — Larutan CaCl₂</h3><p>Menguji Daya Hantar Kalsium Klorida</p></div>
+    </div>
+    <div class="steps-list">
+      <div class="step-item"><div class="step-num">1</div><p>💧 Tuangkan larutan CaCl₂ (Kalsium Klorida) ke dalam gelas kimia.</p></div>
+      <div class="step-item"><div class="step-num">2</div><p>⚡ Celupkan kedua batang elektroda karbon ke dalam gelas kimia.</p></div>
+      <div class="step-item"><div class="step-num">3</div><p>✅ Pastikan kedua ujung elektroda tercelup cukup dalam ke larutan, tetapi jangan sampai saling bersentuhan satu sama lain di dalam gelas kimia.</p></div>
+      <div class="step-item"><div class="step-num">4</div><p>🔍 Amati dengan saksama dua hal berikut:</p></div>
+    </div>
+    <div class="amati-box">
+      <div class="amati-item">💡 <span>Lampu indikator: Apakah lampu menyala terang, menyala redup, atau tidak menyala sama sekali?</span></div>
+      <div class="amati-item">🫧 <span>Batang elektroda: Apakah terdapat banyak, sedikit, atau tidak ada gelembung gas di sekitar elektroda?</span></div>
+    </div>
+    <div class="step-item"><div class="step-num">5</div><p>📝 Tuliskan hasil pengamatan ke dalam Tabel Data Pengamatan pada LKPD.</p></div>
+  </div>
+
+  <!-- Percobaan 4 -->
+  <div class="proc-content" id="proc-3">
+    <div class="proc-header">
+      <img class="proc-larutan-img" src="https://yulinestiyarum.github.io/dayahantarlistrik/HCOOHnew.png" alt="HCOOH" onerror="this.style.display='none'">
+      <img class="proc-larutan-img" src="https://yulinestiyarum.github.io/Gelas-Kimia/Gelas-Kimia.png" alt="Gelas Kimia" onerror="this.style.display='none'">
+      <img class="proc-larutan-img" src="https://yulinestiyarum.github.io/dayahantarlistrik/alatujilarutan.png" alt="Alat Uji" onerror="this.style.display='none'">
+      <div class="proc-header-info"><h3>Percobaan 4 — Larutan HCOOH</h3><p>Menguji Daya Hantar Asam Format</p></div>
+    </div>
+    <div class="steps-list">
+      <div class="step-item"><div class="step-num">1</div><p>💧 Tuangkan larutan HCOOH (Asam Format) ke dalam gelas kimia.</p></div>
+      <div class="step-item"><div class="step-num">2</div><p>⚡ Celupkan kedua batang elektroda karbon ke dalam gelas kimia.</p></div>
+      <div class="step-item"><div class="step-num">3</div><p>✅ Pastikan kedua ujung elektroda tercelup cukup dalam ke larutan, tetapi jangan sampai saling bersentuhan satu sama lain di dalam gelas kimia.</p></div>
+      <div class="step-item"><div class="step-num">4</div><p>🔍 Amati dengan saksama dua hal berikut:</p></div>
+    </div>
+    <div class="amati-box">
+      <div class="amati-item">💡 <span>Lampu indikator: Apakah lampu menyala terang, menyala redup, atau tidak menyala sama sekali?</span></div>
+      <div class="amati-item">🫧 <span>Batang elektroda: Apakah terdapat banyak, sedikit, atau tidak ada gelembung gas di sekitar elektroda?</span></div>
+    </div>
+    <div class="step-item"><div class="step-num">5</div><p>📝 Tuliskan hasil pengamatan ke dalam Tabel Data Pengamatan pada LKPD.</p></div>
+  </div>
+
+  <!-- Percobaan 5 -->
+  <div class="proc-content" id="proc-4">
+    <div class="proc-header">
+      <img class="proc-larutan-img" src="https://yulinestiyarum.github.io/dayahantarlistrik/airsabun.png" alt="Air Sabun" onerror="this.style.display='none'">
+      <img class="proc-larutan-img" src="https://yulinestiyarum.github.io/Gelas-Kimia/Gelas-Kimia.png" alt="Gelas Kimia" onerror="this.style.display='none'">
+      <img class="proc-larutan-img" src="https://yulinestiyarum.github.io/dayahantarlistrik/alatujilarutan.png" alt="Alat Uji" onerror="this.style.display='none'">
+      <div class="proc-header-info"><h3>Percobaan 5 — Air Sabun</h3><p>Menguji Daya Hantar Air Sabun</p></div>
+    </div>
+    <div class="steps-list">
+      <div class="step-item"><div class="step-num">1</div><p>🫧 Tuangkan air sabun ke dalam gelas kimia.</p></div>
+      <div class="step-item"><div class="step-num">2</div><p>⚡ Celupkan kedua batang elektroda karbon ke dalam gelas kimia.</p></div>
+      <div class="step-item"><div class="step-num">3</div><p>✅ Pastikan kedua ujung elektroda tercelup cukup dalam ke larutan, tetapi jangan sampai saling bersentuhan satu sama lain di dalam gelas kimia.</p></div>
+      <div class="step-item"><div class="step-num">4</div><p>🔍 Amati dengan saksama dua hal berikut:</p></div>
+    </div>
+    <div class="amati-box">
+      <div class="amati-item">💡 <span>Lampu indikator: Apakah lampu menyala terang, menyala redup, atau tidak menyala sama sekali?</span></div>
+      <div class="amati-item">🫧 <span>Batang elektroda: Apakah terdapat banyak, sedikit, atau tidak ada gelembung gas di sekitar elektroda?</span></div>
+    </div>
+    <div class="step-item"><div class="step-num">5</div><p>📝 Tuliskan hasil pengamatan ke dalam Tabel Data Pengamatan pada LKPD.</p></div>
+  </div>
+
+  <!-- Percobaan 6 -->
+  <div class="proc-content" id="proc-5">
+    <div class="proc-header">
+      <img class="proc-larutan-img" src="https://yulinestiyarum.github.io/dayahantarlistrik/airgula.png" alt="Larutan Gula" onerror="this.style.display='none'">
+      <img class="proc-larutan-img" src="https://yulinestiyarum.github.io/Gelas-Kimia/Gelas-Kimia.png" alt="Gelas Kimia" onerror="this.style.display='none'">
+      <img class="proc-larutan-img" src="https://yulinestiyarum.github.io/dayahantarlistrik/alatujilarutan.png" alt="Alat Uji" onerror="this.style.display='none'">
+      <div class="proc-header-info"><h3>Percobaan 6 — Larutan Gula (C₁₂H₂₂O₁₁)</h3><p>Menguji Daya Hantar Sukrosa</p></div>
+    </div>
+    <div class="steps-list">
+      <div class="step-item"><div class="step-num">1</div><p>🍬 Tuangkan larutan Gula (Sukrosa, C₁₂H₂₂O₁₁) ke dalam gelas kimia.</p></div>
+      <div class="step-item"><div class="step-num">2</div><p>⚡ Celupkan kedua batang elektroda karbon ke dalam gelas kimia.</p></div>
+      <div class="step-item"><div class="step-num">3</div><p>✅ Pastikan kedua ujung elektroda tercelup cukup dalam ke larutan, tetapi jangan sampai saling bersentuhan satu sama lain di dalam gelas kimia.</p></div>
+      <div class="step-item"><div class="step-num">4</div><p>🔍 Amati dengan saksama dua hal berikut:</p></div>
+    </div>
+    <div class="amati-box">
+      <div class="amati-item">💡 <span>Lampu indikator: Apakah lampu menyala terang, menyala redup, atau tidak menyala sama sekali?</span></div>
+      <div class="amati-item">🫧 <span>Batang elektroda: Apakah terdapat banyak, sedikit, atau tidak ada gelembung gas di sekitar elektroda?</span></div>
+    </div>
+    <div class="step-item"><div class="step-num">5</div><p>📝 Tuliskan hasil pengamatan ke dalam Tabel Data Pengamatan pada LKPD.</p></div>
+  </div>
+</div>
+</div>
+
+<!-- ══ SIMULASI ══ -->
+<div id="page-simulasi" class="page">
+<div class="sim-outer">
+  <div class="sim-ctrl">
+    <h3>🔬 Pilih Percobaan</h3>
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <button class="exp-btn active" id="expBtn0" onclick="selectExp(0,this)"><div class="exp-num">1</div><div><div style="font-size:11px;">Air Aki</div><div style="font-size:9.5px;color:var(--acc);font-family:'DM Mono',monospace;">H₂SO₄</div></div></button>
+      <button class="exp-btn" id="expBtn1" onclick="selectExp(1,this)"><div class="exp-num">2</div><div><div style="font-size:11px;">Larutan KOH</div><div style="font-size:9.5px;color:var(--acc);font-family:'DM Mono',monospace;">Kalium Hidroksida</div></div></button>
+      <button class="exp-btn" id="expBtn2" onclick="selectExp(2,this)"><div class="exp-num">3</div><div><div style="font-size:11px;">Larutan CaCl₂</div><div style="font-size:9.5px;color:var(--acc);font-family:'DM Mono',monospace;">Kalsium Klorida</div></div></button>
+      <button class="exp-btn" id="expBtn3" onclick="selectExp(3,this)"><div class="exp-num">4</div><div><div style="font-size:11px;">Larutan HCOOH</div><div style="font-size:9.5px;color:var(--acc);font-family:'DM Mono',monospace;">Asam Format</div></div></button>
+      <button class="exp-btn" id="expBtn4" onclick="selectExp(4,this)"><div class="exp-num">5</div><div><div style="font-size:11px;">Air Sabun</div><div style="font-size:9.5px;color:var(--acc);font-family:'DM Mono',monospace;">Larutan Sabun</div></div></button>
+      <button class="exp-btn" id="expBtn5" onclick="selectExp(5,this)"><div class="exp-num">6</div><div><div style="font-size:11px;">Larutan Gula</div><div style="font-size:9.5px;color:var(--acc);font-family:'DM Mono',monospace;">Sukrosa C₁₂H₂₂O₁₁</div></div></button>
+    </div>
+    <hr style="border:none;border-top:1px solid var(--border);">
+    <button class="btn-sim btn-run" id="btnRun" onclick="runSim()">▶ Mulai Percobaan</button>
+    <button class="btn-sim btn-rst" onclick="resetSim()">↺ Reset</button>
+    <div id="simStatus" style="font-size:10.5px;color:var(--text3);text-align:center;min-height:16px;font-family:'DM Mono',monospace;"></div>
+  </div>
+  <div class="sim-main">
+    <div class="sim-canvas-wrap">
+      <h3 id="simTitle">⚗️ Percobaan 1 — Air Aki (H₂SO₄)</h3>
+      <canvas id="simCanvas"></canvas>
+    </div>
+    <div class="sim-result" id="simResult">
+      <div class="result-badge" id="resultBadge"></div>
+      <div class="result-detail" id="resultDetail"></div>
+      <div class="result-indicators" id="resultIndicators"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ DISKUSI ══ -->
+<div id="page-diskusi" class="page">
+<div class="scroll" style="overflow-y:auto;">
+  <div class="card" style="margin-bottom:8px;">
+    <div class="ch"><div class="ci blue">💬</div><div class="ct">Pertanyaan Diskusi</div></div>
+    <p style="font-size:11.5px;">Jawab pertanyaan berikut berdasarkan hasil percobaan yang telah dilakukan dalam simulasi virtual lab ini.</p>
+  </div>
+  <div class="disc-q">
+    <div class="dq-num">PERTANYAAN 01</div>
+    <div class="dq-text">Berdasarkan hasil percobaan yang dilakukan, kelompokkan keenam sampel larutan (air aki, larutan KOH, larutan CaCl₂, larutan HCOOH, air sabun, dan larutan gula) ke dalam kategori elektrolit kuat, elektrolit lemah, dan nonelektrolit! Tuliskan alasan pengelompokan tersebut secara spesifik berdasarkan indikator nyala lampu dan gelembung gas yang kalian amati!</div>
+    <textarea class="disc-area" id="dq1" placeholder="Tuliskan jawaban kalian di sini…" oninput="saveDQ(1,this.value)"></textarea>
+  </div>
+  <div class="disc-q">
+    <div class="dq-num">PERTANYAAN 02</div>
+    <div class="dq-text">Pada saat pengujian, larutan KOH dan larutan CaCl₂ mampu membuat lampu menyala terang dan menghasilkan banyak gelembung, sedangkan larutan gula sama sekali tidak memberikan reaksi pada alat uji. Mengapa hal ini bisa terjadi? Jelaskan perbedaan kedua kondisi tersebut berdasarkan teori ionisasi dan keberadaan partikel (ion atau molekul) di dalam masing-masing larutan!</div>
+    <textarea class="disc-area" id="dq2" placeholder="Tuliskan jawaban kalian di sini…" oninput="saveDQ(2,this.value)"></textarea>
+  </div>
+  <div class="disc-q">
+    <div class="dq-num">PERTANYAAN 03</div>
+    <div class="dq-text">Perhatikan kembali hasil pengamatan pada larutan HCOOH (asam format) dan air sabun. Pada kedua larutan tersebut, lampu indikator mungkin menyala sangat redup atau bahkan tidak menyala sama sekali, tetapi masih terdapat gelembung gas di sekitar elektroda. Mengapa fenomena ini dapat membuktikan bahwa larutan tersebut tetap bersifat elektrolit (meskipun lemah)? Kaitkan penjelasan kalian dengan konsep derajat ionisasi (α)!</div>
+    <textarea class="disc-area" id="dq3" placeholder="Tuliskan jawaban kalian di sini…" oninput="saveDQ(3,this.value)"></textarea>
+  </div>
+  <div class="disc-q">
+    <div class="dq-num">PERTANYAAN 04</div>
+    <div class="dq-text">Air murni secara teoritis merupakan penghantar listrik yang sangat buruk (nonelektrolit). Namun, dalam kehidupan sehari-hari, kita sangat dilarang menyentuh stop kontak atau mengoperasikan peralatan listrik saat tangan kita basah atau sedang berdiri di genangan air banjir. Berdasarkan konsep daya hantar listrik larutan yang baru saja kalian pelajari, analisislah mengapa hal tersebut sangat berbahaya dan dapat memicu sengatan listrik!</div>
+    <textarea class="disc-area" id="dq4" placeholder="Tuliskan jawaban kalian di sini…" oninput="saveDQ(4,this.value)"></textarea>
+  </div>
+  <button class="disc-submit" onclick="submitDiskusi()">💾 Simpan Jawaban</button>
+  <button class="disc-submit" id="btnDownloadPDF" style="background:linear-gradient(135deg,#10b981,#34d399);box-shadow:0 2px 12px rgba(16,185,129,0.3);margin-top:8px;display:none;" onclick="downloadDiskusiPDF()">📄 Unduh Hasil Diskusi (PDF)</button>
+  <div class="disc-saved" id="discSaved">✅ Jawaban berhasil disimpan! Bagus sekali! Klik tombol unduh di bawah untuk mendapatkan PDF.</div>
+</div>
+</div>
+
+</div><!-- /app -->
+
+<script>
+// ── AUDIO ENGINE ──
+let audioCtx = null;
+function getAC(){if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}return audioCtx;}
+function playTone(freq,dur,type='sine',vol=0.2,detune=0){
+  const ac=getAC();if(!ac)return;
+  const o=ac.createOscillator(),g=ac.createGain();
+  o.connect(g);g.connect(ac.destination);
+  o.type=type;o.frequency.value=freq;o.detune.value=detune;
+  g.gain.setValueAtTime(vol,ac.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+dur);
+  o.start(ac.currentTime);o.stop(ac.currentTime+dur);
+}
+function playClickSound(){playTone(800,0.08,'sine',0.15);}
+function playDropSound(){
+  const ac=getAC();if(!ac)return;
+  const o=ac.createOscillator(),g=ac.createGain();
+  o.connect(g);g.connect(ac.destination);
+  o.type='sine';o.frequency.setValueAtTime(600,ac.currentTime);
+  o.frequency.exponentialRampToValueAtTime(200,ac.currentTime+0.2);
+  g.gain.setValueAtTime(0.15,ac.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.25);
+  o.start(ac.currentTime);o.stop(ac.currentTime+0.25);
+}
+function playBubbleSound(){
+  const ac=getAC();if(!ac)return;
+  [0,0.05,0.1].forEach((t,i)=>{
+    const o=ac.createOscillator(),g=ac.createGain();
+    o.connect(g);g.connect(ac.destination);
+    o.type='sine';o.frequency.value=400+i*100;
+    g.gain.setValueAtTime(0.1,ac.currentTime+t);
+    g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+t+0.18);
+    o.start(ac.currentTime+t);o.stop(ac.currentTime+t+0.2);
+  });
+}
+function playSuccessSound(){
+  [[523,0],[659,0.1],[784,0.2],[1047,0.35]].forEach(([f,t])=>playTone(f,0.3,'sine',0.15,0));
+}
+function playLampSound(){
+  const ac=getAC();if(!ac)return;
+  const o=ac.createOscillator(),g=ac.createGain();
+  o.connect(g);g.connect(ac.destination);
+  o.type='triangle';o.frequency.value=440;
+  g.gain.setValueAtTime(0,ac.currentTime);g.gain.linearRampToValueAtTime(0.2,ac.currentTime+0.1);
+  g.gain.linearRampToValueAtTime(0.1,ac.currentTime+0.3);g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.8);
+  o.start(ac.currentTime);o.stop(ac.currentTime+0.8);
+}
+function playElectricSound(){
+  const ac=getAC();if(!ac)return;
+  const buf=ac.createBuffer(1,ac.sampleRate*0.3,ac.sampleRate);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*0.15*Math.exp(-i/(ac.sampleRate*0.2));
+  const src=ac.createBufferSource(),g=ac.createGain();
+  src.buffer=buf;src.connect(g);g.connect(ac.destination);g.gain.value=0.5;
+  src.start(ac.currentTime);
+}
+
+// ── NAVIGATION ──
+function show(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  playClickSound();
+  if(id==='simulasi')resizeCanvas();
+}
+function toggleNav(){document.getElementById('mainNav').classList.toggle('open');}
+function closeNav(){document.getElementById('mainNav').classList.remove('open');}
+document.addEventListener('click',function(e){if(!e.target.closest('nav')&&!e.target.closest('#menuToggle'))closeNav();});
+
+// ── PROSEDUR TABS ──
+function showProc(idx,btn){
+  document.querySelectorAll('.proc-content').forEach(p=>p.classList.remove('active'));
+  document.getElementById('proc-'+idx).classList.add('active');
+  document.querySelectorAll('.proc-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  playClickSound();
+}
+
+// ── DISKUSI ──
+const dqStore={};
+function saveDQ(n,v){dqStore[n]=v;}
+function submitDiskusi(){
+  // capture current textarea values
+  [1,2,3,4].forEach(n=>{const el=document.getElementById('dq'+n);if(el)dqStore[n]=el.value;});
+  playSuccessSound();
+  document.getElementById('discSaved').classList.add('show');
+  document.getElementById('btnDownloadPDF').style.display='block';
+  setTimeout(()=>document.getElementById('discSaved').classList.remove('show'),5000);
+}
+
+function downloadDiskusiPDF(){
+  playClickSound();
+  const questions=[
+    'Berdasarkan hasil percobaan, kelompokkan keenam sampel larutan (air aki, larutan KOH, larutan CaCl₂, larutan HCOOH, air sabun, dan larutan gula) ke dalam kategori elektrolit kuat, elektrolit lemah, dan nonelektrolit! Tuliskan alasan pengelompokan berdasarkan indikator nyala lampu dan gelembung gas!',
+    'Mengapa larutan KOH dan CaCl₂ membuat lampu menyala terang, sedangkan larutan gula tidak memberikan reaksi? Jelaskan berdasarkan teori ionisasi dan keberadaan partikel di dalam masing-masing larutan!',
+    'Mengapa pada larutan HCOOH dan air sabun masih terdapat gelembung gas meski lampu redup/tidak menyala? Kaitkan dengan konsep derajat ionisasi (α)!',
+    'Mengapa menyentuh stop kontak dengan tangan basah atau berdiri di genangan air sangat berbahaya? Analisis berdasarkan konsep daya hantar listrik larutan!'
+  ];
+  const now=new Date();
+  const tgl=now.toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  let html=`<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+    body{font-family:'Plus Jakarta Sans',sans-serif;margin:0;padding:32px;color:#1e293b;background:#fff;font-size:13px;line-height:1.7;}
+    .header{text-align:center;border-bottom:3px solid #0ea5e9;padding-bottom:16px;margin-bottom:24px;}
+    .header h1{font-size:20px;color:#0284c7;margin:0 0 4px;}
+    .header p{font-size:12px;color:#64748b;margin:0;}
+    .badge{display:inline-block;background:#e0f2fe;color:#0284c7;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px;}
+    .qblock{margin-bottom:24px;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;}
+    .qnum{background:#0ea5e9;color:#fff;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:6px 14px;}
+    .qtext{background:#f0f9ff;padding:10px 14px;font-weight:600;font-size:12.5px;color:#0c4a6e;border-bottom:1px solid #bae6fd;}
+    .qanswer{padding:12px 14px;min-height:60px;color:#334155;font-size:12.5px;white-space:pre-wrap;}
+    .empty{color:#94a3b8;font-style:italic;}
+    .footer{text-align:center;font-size:10.5px;color:#94a3b8;margin-top:32px;border-top:1px solid #e2e8f0;padding-top:12px;}
+  </style></head><body>
+  <div class="header">
+    <div class="badge">⚗️ Lab Maya Kimia</div>
+    <h1>Hasil Diskusi — Daya Hantar Listrik Larutan</h1>
+    <p>Tanggal: ${tgl}</p>
+  </div>`;
+  questions.forEach((q,i)=>{
+    const ans=(dqStore[i+1]||'').trim();
+    html+=`<div class="qblock">
+      <div class="qnum">Pertanyaan 0${i+1}</div>
+      <div class="qtext">${q}</div>
+      <div class="qanswer">${ans?ans.replace(/</g,'&lt;').replace(/>/g,'&gt;'):'<span class="empty">(Belum dijawab)</span>'}</div>
+    </div>`;
+  });
+  html+=`<div class="footer">Dicetak dari Lab Maya Kimia — Virtual Lab Daya Hantar Listrik Larutan</div></body></html>`;
+
+  const blob=new Blob([html],{type:'text/html'});
+  const url=URL.createObjectURL(blob);
+  const w=window.open(url,'_blank','width=800,height=900');
+  if(w){setTimeout(()=>{w.print();},800);}
+  else{
+    // fallback: direct download as html
+    const a=document.createElement('a');a.href=url;
+    a.download='Hasil_Diskusi_DayaHantarListrik.html';a.click();
+  }
+  setTimeout(()=>URL.revokeObjectURL(url),10000);
+}
+
+// ── SIMULATION ENGINE ──
+const experiments=[
+  {title:'Percobaan 1 — Air Aki (H₂SO₄)',name:'Air Aki (H₂SO₄)',
+   imgSrc:'https://yulinestiyarum.github.io/dayahantarlistrik/H2SO4.png',
+   color:'rgba(255,220,80,0.7)',liquidColor:'rgba(200,220,255,0.6)',
+   type:'kuat',lamp:'terang',bubbles:'banyak',
+   result:'Elektrolit Kuat',resultClass:'result-kuat',
+   desc:'H₂SO₄ terionisasi sempurna (α=1): H₂SO₄ → 2H⁺ + SO₄²⁻. Ion-ion bergerak bebas mengalirkan arus listrik dengan baik.',
+   lampEmoji:'💡',bubbleEmoji:'🫧🫧🫧'},
+  {title:'Percobaan 2 — Larutan KOH',name:'Larutan KOH',
+   imgSrc:'https://yulinestiyarum.github.io/dayahantarlistrik/KOHnew.png',
+   color:'rgba(180,255,200,0.7)',liquidColor:'rgba(180,240,200,0.55)',
+   type:'kuat',lamp:'terang',bubbles:'banyak',
+   result:'Elektrolit Kuat',resultClass:'result-kuat',
+   desc:'KOH terionisasi sempurna (α=1): KOH → K⁺ + OH⁻. Menghasilkan banyak ion bebas yang menghantarkan arus listrik sangat baik.',
+   lampEmoji:'💡',bubbleEmoji:'🫧🫧🫧'},
+  {title:'Percobaan 3 — Larutan CaCl₂',name:'Larutan CaCl₂',
+   imgSrc:'https://yulinestiyarum.github.io/dayahantarlistrik/CaCl2new.png',
+   color:'rgba(150,200,255,0.7)',liquidColor:'rgba(150,200,255,0.5)',
+   type:'kuat',lamp:'terang',bubbles:'banyak',
+   result:'Elektrolit Kuat',resultClass:'result-kuat',
+   desc:'CaCl₂ terionisasi sempurna (α=1): CaCl₂ → Ca²⁺ + 2Cl⁻. Menghasilkan tiga ion per molekul sehingga daya hantar sangat kuat.',
+   lampEmoji:'💡',bubbleEmoji:'🫧🫧🫧'},
+  {title:'Percobaan 4 — Larutan HCOOH',name:'Larutan HCOOH',
+   imgSrc:'https://yulinestiyarum.github.io/dayahantarlistrik/HCOOHnew.png',
+   color:'rgba(255,200,150,0.7)',liquidColor:'rgba(255,220,180,0.5)',
+   type:'lemah',lamp:'redup',bubbles:'sedikit',
+   result:'Elektrolit Lemah',resultClass:'result-lemah',
+   desc:'HCOOH hanya terionisasi sebagian (0<α<1): HCOOH ⇌ H⁺ + HCOO⁻. Hanya sedikit ion yang terbentuk, lampu redup dan sedikit gelembung.',
+   lampEmoji:'🔆',bubbleEmoji:'🫧'},
+  {title:'Percobaan 5 — Air Sabun',name:'Air Sabun',
+   imgSrc:'https://yulinestiyarum.github.io/dayahantarlistrik/airsabun.png',
+   color:'rgba(200,220,255,0.7)',liquidColor:'rgba(200,230,255,0.5)',
+   type:'lemah',lamp:'redup',bubbles:'sedikit',
+   result:'Elektrolit Lemah',resultClass:'result-lemah',
+   desc:'Air sabun mengandung ion-ion dari garam natrium lemak yang terionisasi sebagian. Menyebabkan lampu redup dan sedikit gelembung gas.',
+   lampEmoji:'🔆',bubbleEmoji:'🫧'},
+  {title:'Percobaan 6 — Larutan Gula (C₁₂H₂₂O₁₁)',name:'Larutan Gula',
+   imgSrc:'https://yulinestiyarum.github.io/dayahantarlistrik/airgula.png',
+   color:'rgba(255,240,180,0.7)',liquidColor:'rgba(255,240,160,0.5)',
+   type:'non',lamp:'mati',bubbles:'tidak ada',
+   result:'Nonelektrolit',resultClass:'result-non',
+   desc:'Sukrosa tidak terionisasi (α=0): C₁₂H₂₂O₁₁ tetap sebagai molekul netral. Tidak ada ion, tidak ada arus listrik, lampu mati, tidak ada gelembung.',
+   lampEmoji:'🔴',bubbleEmoji:'❌'}
+];
+
+let currentExp=0;
+let simRunning=false;
+let animFrame=null;
+let simPhase=0;// 0=idle,1=dripping,2=result
+let drops=[];
+let bubbles=[];
+let liquidLevel=0;
+let lampBrightness=0;
+let resultShown=false;
+let simTick=0;
+
+function selectExp(idx,btn){
+  if(simRunning)return;
+  currentExp=idx;
+  document.querySelectorAll('.exp-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('simTitle').textContent='⚗️ '+experiments[idx].title;
+  resetSim();
+  playClickSound();
+}
+
+function resizeCanvas(){
+  const canvas=document.getElementById('simCanvas');
+  const wrap=canvas.parentElement;
+  const ratio=window.devicePixelRatio||1;
+  canvas.width=wrap.clientWidth*ratio;
+  canvas.height=(wrap.clientHeight-40)*ratio;
+  canvas.style.width=wrap.clientWidth+'px';
+  canvas.style.height=(wrap.clientHeight-40)+'px';
+  if(simPhase===0)drawIdle();
+}
+
+function resetSim(){
+  simRunning=false;simPhase=0;drops=[];bubbles=[];liquidLevel=0;lampBrightness=0;resultShown=false;simTick=0;
+  if(animFrame){cancelAnimationFrame(animFrame);animFrame=null;}
+  document.getElementById('simResult').classList.remove('show');
+  document.getElementById('btnRun').disabled=false;
+  document.getElementById('simStatus').textContent='';
+  setTimeout(()=>{drawIdle();},50);
+}
+
+function runSim(){
+  if(simRunning)return;
+  simRunning=true;simPhase=1;drops=[];bubbles=[];liquidLevel=0;lampBrightness=0;resultShown=false;simTick=0;
+  document.getElementById('btnRun').disabled=true;
+  document.getElementById('simResult').classList.remove('show');
+  playElectricSound();
+  setTimeout(()=>animate(),100);
+}
+
+function animate(){
+  simTick++;
+  const canvas=document.getElementById('simCanvas');
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  const exp=experiments[currentExp];
+
+  // Background
+  const bg=ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#070d1a');bg.addColorStop(1,'#0a1225');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+  // ─ Layout ─
+  const cx=W/2;
+  const beakerX=cx-W*0.13,beakerW=W*0.26,beakerH=H*0.38;
+  const beakerY=H*0.52;const beakerBottom=beakerY+beakerH;
+  
+  // Bottle (source) position - top center
+  const bottleX=cx-W*0.04;const bottleY=H*0.04;const bottleW=W*0.08;const bottleH=H*0.22;
+
+  // ─ DRIP PHASE ─
+  if(simPhase===1){
+    // Generate drops
+    if(simTick%8===0&&liquidLevel<0.85){
+      drops.push({x:bottleX+bottleW/2,y:bottleY+bottleH,vy:0,r:(2+Math.random()*2)*(W/600)});
+      playDropSound();
+    }
+    // Update drops
+    drops.forEach(d=>{d.vy+=0.4*(W/600);d.y+=d.vy;});
+    // Remove drops that hit liquid surface
+    const liquidSurface=beakerBottom-liquidLevel*beakerH-4;
+    drops=drops.filter(d=>{
+      if(d.y>=liquidSurface&&liquidLevel<0.85){
+        liquidLevel=Math.min(0.85,liquidLevel+0.015);
+        playDropSound();
+        return false;
+      }
+      return d.y<H;
+    });
+    if(liquidLevel>=0.85&&drops.length===0){
+      simPhase=2;
+      setTimeout(()=>showResult(exp),200);
+    }
+    // Slow down drips after enough liquid
+    if(liquidLevel>=0.5&&simTick%5!==0){drops=drops.filter(d=>d.y<H);}
+  }
+
+  // ─ RESULT PHASE ─
+  if(simPhase===2){
+    const targetLamp=exp.type==='kuat'?1:exp.type==='lemah'?0.35:0;
+    lampBrightness+=(targetLamp-lampBrightness)*0.04;
+    if(exp.type!=='non'&&Math.random()<(exp.type==='kuat'?0.35:0.12)){
+      const liqSurf=beakerBottom-liquidLevel*beakerH;
+      bubbles.push({
+        x:beakerX+beakerW*0.3+Math.random()*beakerW*0.4,
+        y:beakerBottom-4,vy:-(0.5+Math.random()*1.2)*(H/400),
+        r:(1+Math.random()*2.5)*(W/600),alpha:0.8
+      });
+    }
+    bubbles.forEach(b=>{b.y+=b.vy;b.alpha-=0.012;});
+    bubbles=bubbles.filter(b=>b.alpha>0.05&&b.y>beakerY-50);
+    if(simTick%40===0&&exp.type!=='non')playBubbleSound();
+    if(simTick%80===0&&exp.type==='kuat')playLampSound();
+  }
+
+  // ─ DRAW ELECTRODE SETUP (top of image) ─
+  drawSetup(ctx,W,H,cx,beakerX,beakerW,beakerY,beakerH,beakerBottom,bottleX,bottleY,bottleW,bottleH,exp);
+
+  animFrame=requestAnimationFrame(animate);
+}
+
+function drawSetup(ctx,W,H,cx,beakerX,beakerW,beakerY,beakerH,beakerBottom,bottleX,bottleY,bottleW,bottleH,exp){
+  const scale=W/600;
+
+  // ── BATTERY (top left) ──
+  const batX=beakerX-W*0.18,batY=H*0.08;
+  ctx.save();
+  // Battery body
+  const grad=ctx.createLinearGradient(batX,batY,batX+W*0.1,batY);
+  grad.addColorStop(0,'#333');grad.addColorStop(0.3,'#555');grad.addColorStop(1,'#444');
+  ctx.fillStyle=grad;ctx.beginPath();ctx.roundRect(batX,batY,W*0.1,H*0.08,4*scale);ctx.fill();
+  ctx.strokeStyle='#666';ctx.lineWidth=1.5*scale;ctx.stroke();
+  // Battery stripes
+  ctx.fillStyle='#1a1a1a';
+  ctx.fillRect(batX+W*0.025,batY+H*0.015,W*0.007,H*0.05);
+  ctx.fillRect(batX+W*0.05,batY+H*0.015,W*0.007,H*0.05);
+  // Battery terminal
+  ctx.fillStyle='#888';ctx.fillRect(batX+W*0.1,batY+H*0.025,W*0.008,H*0.03);
+  // Battery label
+  ctx.fillStyle='#aaa';ctx.font=`bold ${9*scale}px 'DM Mono',monospace`;ctx.textAlign='center';
+  ctx.fillText('BATTERY',batX+W*0.05,batY+H*0.045);
+  ctx.restore();
+
+  // ── LAMP (top right) ──
+  const lampX=beakerX+beakerW+W*0.08,lampY=H*0.06;
+  const lampR=W*0.045;
+  ctx.save();
+  // Lamp glow
+  if(lampBrightness>0.1){
+    const grd=ctx.createRadialGradient(lampX,lampY,0,lampX,lampY,lampR*3);
+    const alpha=lampBrightness;
+    grd.addColorStop(0,`rgba(255,255,180,${alpha*0.8})`);
+    grd.addColorStop(0.5,`rgba(255,200,50,${alpha*0.3})`);
+    grd.addColorStop(1,'rgba(255,200,50,0)');
+    ctx.fillStyle=grd;ctx.beginPath();ctx.arc(lampX,lampY,lampR*3,0,Math.PI*2);ctx.fill();
+  }
+  // Lamp bulb
+  const lampGrad=ctx.createRadialGradient(lampX-lampR*0.2,lampY-lampR*0.2,0,lampX,lampY,lampR);
+  if(lampBrightness>0.1){
+    lampGrad.addColorStop(0,`rgba(255,255,200,${0.5+lampBrightness*0.5})`);
+    lampGrad.addColorStop(0.6,`rgba(255,200,50,${lampBrightness*0.8})`);
+    lampGrad.addColorStop(1,`rgba(200,150,0,${lampBrightness*0.5})`);
+  }else{
+    lampGrad.addColorStop(0,'rgba(80,80,80,0.7)');lampGrad.addColorStop(1,'rgba(40,40,40,0.5)');
+  }
+  ctx.fillStyle=lampGrad;ctx.beginPath();ctx.arc(lampX,lampY,lampR,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle=lampBrightness>0.1?'rgba(255,200,50,0.7)':'rgba(100,100,100,0.5)';
+  ctx.lineWidth=2*scale;ctx.stroke();
+  // Lamp base
+  ctx.fillStyle='#555';ctx.fillRect(lampX-lampR*0.5,lampY+lampR,lampR,lampR*0.6);
+  ctx.restore();
+
+  // ── WIRES ──
+  ctx.save();
+  ctx.strokeStyle='rgba(56,189,248,0.7)';ctx.lineWidth=2.5*scale;ctx.setLineDash([]);
+  // Wire from battery to lamp
+  const batRight=batX+W*0.108;
+  ctx.beginPath();ctx.moveTo(batRight,batY+H*0.04);ctx.lineTo(lampX,batY+H*0.04);ctx.lineTo(lampX,lampY-lampR);ctx.stroke();
+  // Wire from battery down to left electrode
+  const elecLX=beakerX+beakerW*0.28;const elecRX=beakerX+beakerW*0.72;
+  ctx.beginPath();ctx.moveTo(batX+W*0.05,batY+H*0.08);ctx.lineTo(batX+W*0.05,H*0.34);ctx.lineTo(elecLX,H*0.34);ctx.lineTo(elecLX,beakerY+H*0.02);ctx.stroke();
+  // Wire from lamp down to right electrode
+  ctx.beginPath();ctx.moveTo(lampX,lampY+lampR+lampR*0.6);ctx.lineTo(lampX,H*0.34);ctx.lineTo(elecRX,H*0.34);ctx.lineTo(elecRX,beakerY+H*0.02);ctx.stroke();
+  ctx.restore();
+
+  // ── ELECTRODES ──
+  const elecTop=H*0.34;const elecBot=beakerBottom-liquidLevel*beakerH+H*0.02;
+  ctx.save();
+  // Left electrode
+  const eGrad1=ctx.createLinearGradient(elecLX-3*scale,0,elecLX+3*scale,0);
+  eGrad1.addColorStop(0,'#333');eGrad1.addColorStop(0.5,'#666');eGrad1.addColorStop(1,'#444');
+  ctx.fillStyle=eGrad1;ctx.fillRect(elecLX-3*scale,elecTop,6*scale,elecBot-elecTop);
+  ctx.fillStyle='#777';ctx.font=`bold ${8*scale}px 'DM Mono',monospace`;ctx.textAlign='center';
+  ctx.fillText('C',elecLX,elecTop-4*scale);
+  // Right electrode
+  const eGrad2=ctx.createLinearGradient(elecRX-3*scale,0,elecRX+3*scale,0);
+  eGrad2.addColorStop(0,'#333');eGrad2.addColorStop(0.5,'#666');eGrad2.addColorStop(1,'#444');
+  ctx.fillStyle=eGrad2;ctx.fillRect(elecRX-3*scale,elecTop,6*scale,elecBot-elecTop);
+  ctx.fillStyle='#777';ctx.font=`bold ${8*scale}px 'DM Mono',monospace`;ctx.textAlign='center';
+  ctx.fillText('C',elecRX,elecTop-4*scale);
+  ctx.restore();
+
+  // ── BEAKER ──
+  ctx.save();
+  // Beaker glass body
+  const beakerGrad=ctx.createLinearGradient(beakerX,0,beakerX+beakerW,0);
+  beakerGrad.addColorStop(0,'rgba(150,200,255,0.12)');
+  beakerGrad.addColorStop(0.1,'rgba(200,230,255,0.04)');
+  beakerGrad.addColorStop(0.9,'rgba(200,230,255,0.04)');
+  beakerGrad.addColorStop(1,'rgba(150,200,255,0.12)');
+  ctx.fillStyle=beakerGrad;
+  ctx.beginPath();ctx.moveTo(beakerX,beakerY);ctx.lineTo(beakerX,beakerBottom);
+  ctx.lineTo(beakerX+beakerW,beakerBottom);ctx.lineTo(beakerX+beakerW,beakerY);ctx.closePath();ctx.fill();
+  // Beaker outline
+  ctx.strokeStyle='rgba(150,200,255,0.5)';ctx.lineWidth=2*scale;
+  ctx.beginPath();ctx.moveTo(beakerX,beakerY);ctx.lineTo(beakerX,beakerBottom);
+  ctx.lineTo(beakerX+beakerW,beakerBottom);ctx.lineTo(beakerX+beakerW,beakerY);ctx.stroke();
+  // Beaker rim/spout
+  ctx.beginPath();ctx.moveTo(beakerX-8*scale,beakerY);ctx.lineTo(beakerX+beakerW+8*scale,beakerY);ctx.stroke();
+  ctx.fillStyle='rgba(150,200,255,0.1)';ctx.fillRect(beakerX-8*scale,beakerY-8*scale,beakerW+16*scale,8*scale);
+  // Measurement lines
+  ctx.strokeStyle='rgba(150,200,255,0.2)';ctx.lineWidth=1*scale;ctx.setLineDash([4*scale,4*scale]);
+  [0.3,0.5,0.7].forEach(frac=>{const y=beakerBottom-frac*beakerH;ctx.beginPath();ctx.moveTo(beakerX+8*scale,y);ctx.lineTo(beakerX+beakerW-8*scale,y);ctx.stroke();});
+  ctx.setLineDash([]);
+  ctx.restore();
+
+  // ── LIQUID ──
+  if(liquidLevel>0){
+    ctx.save();
+    const liqTop=beakerBottom-liquidLevel*beakerH;
+    ctx.beginPath();ctx.rect(beakerX+2*scale,liqTop,beakerW-4*scale,liquidLevel*beakerH-2*scale);ctx.clip();
+    const liqGrad=ctx.createLinearGradient(0,liqTop,0,beakerBottom);
+    liqGrad.addColorStop(0,exp.liquidColor.replace('0.5','0.7'));
+    liqGrad.addColorStop(1,exp.liquidColor.replace('0.5','0.4'));
+    ctx.fillStyle=liqGrad;ctx.fillRect(beakerX+2*scale,liqTop,beakerW-4*scale,liquidLevel*beakerH);
+    // Surface shimmer
+    ctx.strokeStyle='rgba(255,255,255,0.3)';ctx.lineWidth=1.5*scale;
+    ctx.beginPath();ctx.moveTo(beakerX+2*scale,liqTop+2*scale);ctx.lineTo(beakerX+beakerW-2*scale,liqTop+2*scale);ctx.stroke();
+    // Ion particles (for electrolytes)
+    if(simPhase===2&&exp.type!=='non'){
+      const ionCount=exp.type==='kuat'?18:6;
+      for(let i=0;i<ionCount;i++){
+        const ang=simTick*0.03+i*(Math.PI*2/ionCount);const r=(beakerW*0.3);
+        const ix=cx+Math.cos(ang)*r*0.6+Math.sin(ang*1.7)*r*0.2;
+        const iy=(liqTop+beakerBottom)/2+Math.sin(ang*1.3)*beakerH*0.18;
+        if(ix>=beakerX&&ix<=beakerX+beakerW&&iy>=liqTop&&iy<=beakerBottom){
+          ctx.beginPath();ctx.arc(ix,iy,2.5*scale,0,Math.PI*2);
+          ctx.fillStyle=i%2===0?'rgba(100,200,255,0.8)':'rgba(255,150,100,0.8)';ctx.fill();
+        }
+      }
+    }
+    ctx.restore();
+  }
+
+  // ── BUBBLES ──
+  ctx.save();
+  bubbles.forEach(b=>{
+    if(b.x>=beakerX&&b.x<=beakerX+beakerW&&b.y>=beakerY){
+      ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(150,230,255,${b.alpha})`;ctx.lineWidth=1.5*scale;ctx.stroke();
+      ctx.fillStyle=`rgba(200,240,255,${b.alpha*0.2})`;ctx.fill();
+    }
+  });
+  ctx.restore();
+
+  // ── DROPS ──
+  ctx.save();
+  drops.forEach(d=>{
+    const dg=ctx.createRadialGradient(d.x-d.r*0.3,d.y-d.r*0.3,0,d.x,d.y,d.r);
+    dg.addColorStop(0,'rgba(200,230,255,0.9)');dg.addColorStop(1,exp.liquidColor);
+    ctx.fillStyle=dg;ctx.beginPath();ctx.arc(d.x,d.y,d.r,0,Math.PI*2);ctx.fill();
+  });
+  ctx.restore();
+
+  // ── BOTTLE / SOURCE ──
+  ctx.save();
+  const bxC=bottleX;const byT=bottleY;const bW=bottleW;const bH=bottleH;
+  // Bottle body
+  const bottleGrad=ctx.createLinearGradient(bxC,0,bxC+bW,0);
+  bottleGrad.addColorStop(0,'rgba(180,220,255,0.3)');
+  bottleGrad.addColorStop(0.3,'rgba(220,240,255,0.08)');
+  bottleGrad.addColorStop(0.7,'rgba(220,240,255,0.08)');
+  bottleGrad.addColorStop(1,'rgba(180,220,255,0.3)');
+  ctx.fillStyle=bottleGrad;
+  ctx.beginPath();ctx.roundRect(bxC,byT+bH*0.2,bW,bH*0.8,4*scale);ctx.fill();
+  // Bottle neck
+  ctx.fillStyle='rgba(180,220,255,0.2)';
+  ctx.beginPath();ctx.roundRect(bxC+bW*0.2,byT,bW*0.6,bH*0.25,2*scale);ctx.fill();
+  // Bottle outline
+  ctx.strokeStyle='rgba(150,200,255,0.4)';ctx.lineWidth=1.5*scale;
+  ctx.beginPath();ctx.roundRect(bxC,byT+bH*0.2,bW,bH*0.8,4*scale);ctx.stroke();
+  ctx.beginPath();ctx.roundRect(bxC+bW*0.2,byT,bW*0.6,bH*0.25,2*scale);ctx.stroke();
+  // Liquid inside bottle
+  const fillY=byT+bH*0.25+(bH*0.75*(1-liquidLevel*0.5));
+  ctx.fillStyle=exp.liquidColor;
+  ctx.beginPath();ctx.rect(bxC+2*scale,fillY,bW-4*scale,byT+bH-fillY-2*scale);ctx.fill();
+  // Label
+  ctx.fillStyle='rgba(255,255,255,0.8)';ctx.font=`bold ${7.5*scale}px 'DM Mono',monospace`;ctx.textAlign='center';
+  ctx.fillText(experiments[currentExp].name,bxC+bW/2,byT+bH*0.55);
+  ctx.restore();
+
+  // ── FORMULA LABEL ──
+  ctx.save();
+  ctx.font=`bold ${10*scale}px 'DM Mono',monospace`;ctx.textAlign='left';
+  ctx.fillStyle='rgba(125,211,252,0.9)';
+  ctx.fillText('⚗️ '+exp.name,beakerX,beakerY-18*scale);
+  ctx.restore();
+
+  // ── LAMP STATUS INDICATOR ──
+  if(simPhase===2){
+    ctx.save();
+    const indX=beakerX+beakerW+W*0.04,indY=H*0.38;
+    ctx.font=`${11*scale}px sans-serif`;ctx.textAlign='left';
+    ctx.fillStyle='rgba(200,220,255,0.7)';
+    ctx.fillText('Lampu: '+(exp.type==='kuat'?'🌟 Terang':exp.type==='lemah'?'🔆 Redup':'🔴 Mati'),indX,indY);
+    ctx.fillText('Gelembung: '+(exp.type==='kuat'?'🫧🫧🫧':exp.type==='lemah'?'🫧':'❌'),indX,indY+16*scale);
+    ctx.restore();
+  }
+}
+
+function showResult(exp){
+  if(resultShown)return;resultShown=true;
+  const result=document.getElementById('simResult');
+  const badge=document.getElementById('resultBadge');
+  const detail=document.getElementById('resultDetail');
+  const inds=document.getElementById('resultIndicators');
+  badge.className='result-badge '+exp.resultClass;
+  badge.innerHTML=`<span style="font-size:18px">${exp.type==='kuat'?'💡':exp.type==='lemah'?'🔆':'🔴'}</span><span>${exp.result}</span>`;
+  detail.textContent=exp.desc;
+  inds.innerHTML=`
+    <div class="ri"><div class="ri-val">${exp.lampEmoji}</div><div class="ri-lbl">Lampu</div><div class="ri-txt" style="color:${exp.type==='kuat'?'#7dd3fc':exp.type==='lemah'?'#fbbf24':'#f87171'}">${exp.lamp}</div></div>
+    <div class="ri"><div class="ri-val">${exp.bubbleEmoji}</div><div class="ri-lbl">Gelembung</div><div class="ri-txt" style="color:${exp.type==='non'?'#f87171':'#7dd3fc'}">${exp.bubbles}</div></div>
+    <div class="ri"><div class="ri-val">${exp.type==='kuat'?'α=1':exp.type==='lemah'?'α<1':'α=0'}</div><div class="ri-lbl">Derajat Ionisasi</div><div class="ri-txt" style="color:var(--acc3)">${exp.type==='kuat'?'sempurna':exp.type==='lemah'?'sebagian':'tidak'}</div></div>
+  `;
+  result.classList.add('show');
+  playSuccessSound();
+  document.getElementById('simStatus').textContent='✅ Percobaan selesai!';
+}
+
+function drawIdle(){
+  const canvas=document.getElementById('simCanvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  const exp=experiments[currentExp];
+  bubbles=[];drops=[];
+  liquidLevel=0;lampBrightness=0;
+  const cx=W/2;
+  const beakerX=cx-W*0.13,beakerW=W*0.26,beakerH=H*0.38;
+  const beakerY=H*0.52;const beakerBottom=beakerY+beakerH;
+  const bottleX=cx-W*0.04;const bottleY=H*0.04;const bottleW=W*0.08;const bottleH=H*0.22;
+  drawSetup(ctx,W,H,cx,beakerX,beakerW,beakerY,beakerH,beakerBottom,bottleX,bottleY,bottleW,bottleH,exp);
+  // Idle text
+  ctx.save();
+  ctx.font=`${11*(W/600)}px 'Plus Jakarta Sans',sans-serif`;ctx.textAlign='center';
+  ctx.fillStyle='rgba(125,211,252,0.5)';
+  ctx.fillText('▶ Klik "Mulai Percobaan" untuk memulai simulasi',cx,H*0.95);
+  ctx.restore();
+}
+
+// ── INIT ──
+window.addEventListener('load',()=>{setTimeout(()=>resizeCanvas(),500);});
+window.addEventListener('resize',()=>{if(document.getElementById('page-simulasi').classList.contains('active'))resizeCanvas();});
+
+// Touch support for simulation canvas
+const simPage=document.getElementById('page-simulasi');
+function handleSimTap(){if(!simRunning&&simPhase===0)drawIdle();}
+simPage.addEventListener('click',handleSimTap,true);
+simPage.addEventListener('touchend',function(e){e.preventDefault();handleSimTap();},{passive:false});
+
+// Prevent default touch scroll on canvas to avoid accidental navigation
+document.getElementById && (() => {
+  window.addEventListener('load', () => {
+    const canvas = document.getElementById('simCanvas');
+    if(canvas) {
+      canvas.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});
+      canvas.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+    }
+  });
+})();
+
+// Tab switching trigger resize
+const origShow=window.show;
+window.show=function(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  playClickSound();
+  if(id==='simulasi'){setTimeout(()=>resizeCanvas(),100);}
+};
+</script>
+</body>
+</html>
