@@ -1,0 +1,2088 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Maya Kimia – Sel Volta</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050d1a;
+    --panel: #0a1628;
+    --panel2: #0d1e35;
+    --accent: #00d4ff;
+    --accent2: #00ff88;
+    --accent3: #ff6b35;
+    --gold: #ffd700;
+    --red: #ff4444;
+    --text: #e0f0ff;
+    --muted: #6a8aaa;
+    --border: rgba(0,212,255,0.25);
+    --glow: 0 0 20px rgba(0,212,255,0.4);
+    --glow2: 0 0 20px rgba(0,255,136,0.4);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+  html, body {
+    width:100vw; height:100vh; overflow:hidden;
+    background:var(--bg);
+    font-family:'Exo 2', sans-serif;
+    color:var(--text);
+    -webkit-user-select:none; user-select:none;
+  }
+
+  /* ===== COVER ===== */
+  #cover {
+    position:fixed; inset:0; z-index:1000;
+    background: radial-gradient(ellipse at 30% 50%, #001a3a 0%, #050d1a 60%);
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:0;
+  }
+  #cover::before {
+    content:'';
+    position:absolute; inset:0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(0,212,255,0.03) 60px, rgba(0,212,255,0.03) 61px),
+                repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(0,212,255,0.03) 60px, rgba(0,212,255,0.03) 61px);
+  }
+  .cover-inner {
+    display:flex; align-items:center; gap:60px;
+    position:relative; z-index:1;
+  }
+  .cover-img-wrap {
+    position:relative;
+    width:340px; flex-shrink:0;
+  }
+  .cover-img-wrap img {
+    width:100%;
+    filter: drop-shadow(0 0 30px rgba(0,212,255,0.5));
+    animation: floatImg 4s ease-in-out infinite;
+  }
+  @keyframes floatImg {
+    0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)}
+  }
+  .cover-text {
+    display:flex; flex-direction:column; gap:14px;
+  }
+  .cover-badge {
+    font-family:'Orbitron', sans-serif;
+    font-size:11px; letter-spacing:4px; color:var(--accent);
+    text-transform:uppercase;
+    border:1px solid var(--accent);
+    display:inline-block; padding:4px 14px; border-radius:30px;
+    width:fit-content;
+  }
+  .cover-title {
+    font-family:'Orbitron', sans-serif;
+    font-size:13px; letter-spacing:2px; color:var(--muted);
+    text-transform:uppercase;
+  }
+  .cover-main {
+    font-family:'Orbitron', sans-serif;
+    font-size:42px; font-weight:900; line-height:1.1;
+    color:#fff;
+    text-shadow: 0 0 40px rgba(0,212,255,0.6), 0 0 80px rgba(0,212,255,0.3);
+  }
+  .cover-main span { color:var(--accent); }
+  .cover-subtitle {
+    font-size:16px; color:var(--muted); font-weight:300;
+    letter-spacing:1px; max-width:420px;
+  }
+  .cover-meta {
+    font-size:12px; color:var(--muted); margin-top:4px;
+    display:flex; gap:20px;
+  }
+  .cover-meta span { display:flex; align-items:center; gap:6px; }
+  .cover-meta i { color:var(--accent); font-size:14px; }
+  .btn-start {
+    margin-top:10px;
+    background: linear-gradient(135deg, var(--accent), #0080ff);
+    border:none; color:#fff; padding:14px 40px;
+    font-family:'Orbitron', sans-serif; font-size:14px; font-weight:700;
+    letter-spacing:2px; border-radius:8px; cursor:pointer;
+    box-shadow: var(--glow), 0 4px 20px rgba(0,212,255,0.3);
+    transition: all .3s; width:fit-content;
+    text-transform:uppercase;
+  }
+  .btn-start:hover {
+    transform:translateY(-2px);
+    box-shadow: 0 0 30px rgba(0,212,255,0.7), 0 8px 30px rgba(0,212,255,0.4);
+  }
+
+  /* ===== PARTICLES on cover ===== */
+  .particle {
+    position:absolute; border-radius:50%;
+    pointer-events:none; animation: particleFloat linear infinite;
+  }
+  @keyframes particleFloat {
+    0%{transform:translateY(100vh) scale(0); opacity:0}
+    10%{opacity:1}
+    90%{opacity:1}
+    100%{transform:translateY(-10vh) scale(1); opacity:0}
+  }
+
+  /* ===== MAIN APP ===== */
+  #app { display:none; width:100vw; height:100vh; flex-direction:column; }
+
+  /* Header */
+  .header {
+    height:52px; flex-shrink:0;
+    background: linear-gradient(90deg, #060e1e, #0a1628, #060e1e);
+    border-bottom:1px solid var(--border);
+    display:flex; align-items:center; padding:0 20px;
+    gap:16px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.5);
+  }
+  .header-logo {
+    font-family:'Orbitron', sans-serif;
+    font-size:11px; font-weight:700; letter-spacing:3px;
+    color:var(--accent); text-transform:uppercase;
+  }
+  .header-title {
+    font-family:'Orbitron', sans-serif;
+    font-size:15px; font-weight:900; color:#fff;
+    letter-spacing:1px;
+  }
+  .header-title span { color:var(--accent); }
+  .header-spacer { flex:1; }
+  .header-info {
+    font-size:11px; color:var(--muted);
+    display:flex; gap:16px; align-items:center;
+  }
+  .header-info .dot {
+    width:6px; height:6px; border-radius:50%;
+    background:var(--accent2); box-shadow: var(--glow2);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  /* Tabs */
+  .tabs {
+    height:44px; flex-shrink:0;
+    background:#07111f;
+    border-bottom:1px solid var(--border);
+    display:flex; align-items:flex-end;
+    padding:0 16px; gap:4px;
+  }
+  .tab {
+    padding:10px 20px;
+    font-family:'Exo 2', sans-serif;
+    font-size:12px; font-weight:600; letter-spacing:.5px;
+    color:var(--muted); border:none; background:none;
+    cursor:pointer; border-radius:6px 6px 0 0;
+    border:1px solid transparent;
+    border-bottom:none; transition:all .25s;
+    text-transform:uppercase;
+    min-height:44px;
+  }
+  .tab:hover { color:var(--accent); }
+  .tab.active {
+    background:var(--panel); color:var(--accent);
+    border-color:var(--border);
+    box-shadow: 0 -4px 12px rgba(0,212,255,0.15);
+  }
+
+  /* Content area */
+  .content {
+    flex:1; overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  .tab-panel { display:none; height:100%; overflow:hidden; }
+  .tab-panel.active { display:flex; flex-direction:column; height:100%; }
+
+  /* ===== TUJUAN TAB ===== */
+  .tujuan-panel {
+    flex:1; overflow:hidden; padding:12px 24px;
+    display:grid; grid-template-columns:1fr 1fr; gap:14px;
+    align-content:start;
+  }
+  .tujuan-panel::-webkit-scrollbar { width:4px; }
+  .tujuan-panel::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  .section-card {
+    background:var(--panel); border:1px solid var(--border);
+    border-radius:10px; padding:12px 14px;
+    position:relative; overflow:hidden;
+  }
+  .section-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+  .section-card.full { grid-column:1/-1; }
+  .card-title {
+    font-family:'Orbitron', sans-serif;
+    font-size:11px; letter-spacing:3px; color:var(--accent);
+    text-transform:uppercase; margin-bottom:8px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .card-title::before {
+    content:''; width:3px; height:14px;
+    background:var(--accent); border-radius:2px;
+    box-shadow: var(--glow);
+  }
+  .tujuan-list { list-style:none; display:flex; flex-direction:column; gap:5px; }
+  .tujuan-list li {
+    display:flex; gap:10px; align-items:flex-start;
+    font-size:12px; line-height:1.5; color:var(--text);
+  }
+  .tujuan-list li .num {
+    flex-shrink:0; width:22px; height:22px;
+    background: linear-gradient(135deg, var(--accent), #0066cc);
+    border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:11px; font-weight:700; font-family:'Orbitron',sans-serif;
+    color:#fff; margin-top:1px;
+  }
+  .hasil-grid { display:grid; grid-template-columns:1fr; gap:6px; }
+  .hasil-item {
+    background:rgba(0,212,255,0.05);
+    border:1px solid rgba(0,212,255,0.15);
+    border-radius:6px; padding:6px 10px;
+  }
+  .hasil-item .hi-title {
+    font-size:10px; font-weight:700; letter-spacing:1px;
+    color:var(--accent2); text-transform:uppercase; margin-bottom:3px;
+  }
+  .hasil-item ul { list-style:none; display:flex; flex-direction:column; gap:2px; }
+  .hasil-item ul li { font-size:11px; color:var(--text); padding-left:12px; position:relative; }
+  .hasil-item ul li::before { content:'→'; position:absolute; left:0; color:var(--accent); font-size:10px; }
+
+  /* ===== TEORI TAB ===== */
+  .teori-layout {
+    flex:1; display:grid; grid-template-columns:1fr 260px;
+    overflow:hidden;
+  }
+  .teori-text {
+    overflow:hidden; padding:12px 18px;
+  }
+  .teori-text::-webkit-scrollbar { width:4px; }
+  .teori-text::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  .teori-sidebar {
+    background:var(--panel); border-left:1px solid var(--border);
+    padding:10px; overflow:hidden;
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .teori-title {
+    font-family:'Orbitron', sans-serif;
+    font-size:13px; font-weight:700; color:#fff;
+    margin-bottom:8px;
+    padding-bottom:6px; border-bottom:1px solid var(--border);
+  }
+  .teori-text p { font-size:11px; line-height:1.6; color:var(--text); margin-bottom:8px; }
+  .teori-text strong { color:var(--accent); }
+  .formula-box {
+    background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(0,128,255,0.05));
+    border:1px solid var(--accent);
+    border-radius:8px; padding:8px 14px;
+    text-align:center; margin:8px 0;
+    box-shadow: var(--glow);
+  }
+  .formula-box .formula {
+    font-family:'Orbitron', sans-serif;
+    font-size:14px; font-weight:700; color:var(--accent2);
+    letter-spacing:2px;
+  }
+  .formula-box .formula-label {
+    font-size:10px; color:var(--muted); margin-top:3px;
+  }
+  .electrode-cards { display:flex; gap:8px; margin:8px 0; }
+  .e-card {
+    flex:1; border-radius:8px; padding:8px;
+    text-align:center;
+  }
+  .e-card.anoda { background:rgba(255,107,53,0.1); border:1px solid rgba(255,107,53,0.4); }
+  .e-card.katoda { background:rgba(0,212,255,0.1); border:1px solid rgba(0,212,255,0.4); }
+  .e-card .e-symbol {
+    font-family:'Orbitron', sans-serif; font-size:16px; font-weight:900;
+    margin-bottom:3px;
+  }
+  .e-card.anoda .e-symbol { color:var(--accent3); }
+  .e-card.katoda .e-symbol { color:var(--accent); }
+  .e-card .e-name { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:2px; }
+  .e-card .e-desc { font-size:10px; color:var(--muted); line-height:1.4; }
+
+  /* Teori sidebar – volta diagram */
+  .volta-diagram-img {
+    width:100%; border-radius:8px;
+    border:1px solid var(--border);
+    box-shadow: 0 0 20px rgba(0,212,255,0.2);
+  }
+  .sidebar-label {
+    font-size:10px; text-align:center; color:var(--muted);
+    margin-top:4px;
+  }
+  .deret-volta {
+    background:var(--panel2); border:1px solid var(--border);
+    border-radius:8px; padding:12px;
+  }
+  .deret-title {
+    font-size:10px; font-weight:700; letter-spacing:2px;
+    color:var(--accent); text-transform:uppercase; margin-bottom:10px;
+  }
+  .deret-list {
+    display:flex; flex-direction:column; gap:4px;
+  }
+  .deret-item {
+    display:flex; align-items:center; gap:8px;
+    padding:5px 8px; border-radius:6px;
+    font-size:12px; transition:all .2s;
+  }
+  .deret-item:hover { background:rgba(0,212,255,0.08); }
+  .deret-item .sym {
+    width:28px; height:28px;
+    border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-family:'Orbitron', sans-serif; font-size:10px; font-weight:700;
+    flex-shrink:0;
+  }
+  .deret-item .eo {
+    margin-left:auto; font-size:11px;
+    font-family:'Orbitron', sans-serif;
+    color:var(--accent2);
+  }
+  .deret-item .eo.neg { color:var(--accent3); }
+
+  /* ===== ALAT BAHAN TAB ===== */
+  .alatbahan-scroll { flex:1; overflow:hidden; padding:10px 18px; }
+  .alatbahan-scroll::-webkit-scrollbar { width:4px; }
+  .alatbahan-scroll::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  .ab-section-title {
+    font-family:'Orbitron', sans-serif; font-size:10px;
+    letter-spacing:3px; color:var(--accent); text-transform:uppercase;
+    margin:6px 0 6px; display:flex; align-items:center; gap:8px;
+  }
+  .ab-section-title::after {
+    content:''; flex:1; height:1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+  .alat-grid {
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap:8px; margin-bottom:8px;
+  }
+  .alat-card {
+    background:var(--panel); border:1px solid var(--border);
+    border-radius:8px; padding:8px; text-align:center;
+    transition:all .25s; cursor:default; position:relative; overflow:hidden;
+  }
+  .alat-card::before {
+    content:''; position:absolute; inset:0;
+    background: linear-gradient(135deg, rgba(0,212,255,0.05), transparent);
+    opacity:0; transition:.25s;
+  }
+  .alat-card:hover { border-color:var(--accent); transform:translateY(-3px); box-shadow:var(--glow); }
+  .alat-card:hover::before { opacity:1; }
+  .alat-card img { width:48px; height:48px; object-fit:contain; margin-bottom:4px; }
+  .alat-card .ac-name { font-size:10px; font-weight:700; color:#fff; margin-bottom:1px; }
+  .alat-card .ac-desc { font-size:9px; color:var(--muted); line-height:1.3; }
+
+  /* ===== SIMULASI TAB ===== */
+  .sim-layout {
+    flex:1; display:grid;
+    grid-template-columns:220px 1fr 200px;
+    overflow:hidden;
+  }
+  .sim-left {
+    background:var(--panel); border-right:1px solid var(--border);
+    display:flex; flex-direction:column; overflow-y:auto;
+  }
+  .sim-left::-webkit-scrollbar { width:3px; }
+  .sim-left::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  .sim-left-title {
+    padding:12px 14px;
+    font-family:'Orbitron', sans-serif; font-size:10px;
+    letter-spacing:2px; color:var(--accent); text-transform:uppercase;
+    border-bottom:1px solid var(--border); flex-shrink:0;
+  }
+  .exp-list { padding:8px; display:flex; flex-direction:column; gap:4px; }
+  .exp-btn {
+    background:none; border:1px solid var(--border);
+    color:var(--muted); padding:10px 12px;
+    border-radius:8px; cursor:pointer; text-align:left;
+    font-family:'Exo 2', sans-serif; font-size:12px;
+    transition:all .2s; display:flex; align-items:center; gap:8px;
+  }
+  .exp-btn .exp-n {
+    width:20px; height:20px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:10px; font-weight:700; font-family:'Orbitron', sans-serif;
+    background:rgba(0,212,255,0.1); color:var(--muted);
+    flex-shrink:0; transition:.2s;
+  }
+  .exp-btn:hover { border-color:var(--accent); color:var(--text); }
+  .exp-btn:hover .exp-n { background:var(--accent); color:#fff; }
+  .exp-btn.active { border-color:var(--accent); color:var(--accent); background:rgba(0,212,255,0.05); }
+  .exp-btn.active .exp-n { background:var(--accent); color:#fff; }
+  .exp-btn.done .exp-n { background:var(--accent2); color:#000; }
+  .exp-btn.done { border-color:var(--accent2); }
+
+  /* Main sim area */
+  .sim-main {
+    display:flex; flex-direction:column; overflow:hidden; position:relative;
+  }
+  .sim-canvas-wrap {
+    flex:1; position:relative; overflow:hidden;
+  }
+  #simCanvas { width:100%; height:100%; display:block; }
+
+  /* Sim controls bar */
+  .sim-controls {
+    height:52px; flex-shrink:0;
+    background:#060e1e; border-top:1px solid var(--border);
+    display:flex; align-items:center; gap:12px; padding:0 16px;
+  }
+  .sim-step-info {
+    flex:1; font-size:12px; color:var(--text);
+  }
+  .sim-step-info .step-label {
+    font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1px;
+  }
+  .btn-sim {
+    padding:10px 20px; border-radius:7px; border:none; cursor:pointer;
+    font-family:'Exo 2', sans-serif; font-size:12px; font-weight:700;
+    letter-spacing:.5px; text-transform:uppercase; transition:all .2s;
+    min-height:44px;
+  }
+  .btn-next {
+    background: linear-gradient(135deg, var(--accent), #0066cc);
+    color:#fff; box-shadow: 0 2px 12px rgba(0,212,255,0.3);
+  }
+  .btn-next:hover { transform:translateY(-1px); box-shadow: 0 4px 20px rgba(0,212,255,0.5); }
+  .btn-reset { background:rgba(255,68,68,0.15); color:var(--red); border:1px solid rgba(255,68,68,0.3); }
+  .btn-reset:hover { background:rgba(255,68,68,0.25); }
+
+  /* Sim right panel */
+  .sim-right {
+    background:var(--panel); border-left:1px solid var(--border);
+    display:flex; flex-direction:column; padding:12px; gap:10px;
+    overflow-y:auto;
+  }
+  .sim-right::-webkit-scrollbar { width:3px; }
+  .sim-right::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  .sr-title {
+    font-family:'Orbitron', sans-serif; font-size:9px;
+    letter-spacing:2px; color:var(--accent); text-transform:uppercase;
+    border-bottom:1px solid var(--border); padding-bottom:8px;
+  }
+
+  /* Voltmeter display */
+  .voltmeter-display {
+    background:linear-gradient(145deg,#0a1628,#050d1a);
+    border:2px solid var(--accent); border-radius:12px;
+    padding:12px; text-align:center;
+    box-shadow: var(--glow), inset 0 0 20px rgba(0,212,255,0.05);
+  }
+  .vm-screen {
+    background:#000a08; border:1px solid rgba(0,255,136,0.3);
+    border-radius:8px; padding:8px 12px; margin:6px 0;
+    font-family:'Orbitron', sans-serif;
+    font-size:28px; font-weight:900;
+    color:var(--accent2);
+    text-shadow: 0 0 20px rgba(0,255,136,0.8);
+    letter-spacing:2px; min-height:52px;
+    display:flex; align-items:center; justify-content:center;
+    position:relative; overflow:hidden;
+  }
+  .vm-screen::after {
+    content:'';
+    position:absolute; inset:0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,255,136,0.03) 3px, rgba(0,255,136,0.03) 4px);
+    pointer-events:none;
+  }
+  .vm-unit { font-size:12px; color:var(--muted); }
+  .vm-label { font-size:9px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; }
+
+  /* Needle animation */
+  .vm-needle-wrap {
+    position:relative; height:60px; margin:4px 0;
+  }
+  .vm-needle-wrap svg { width:100%; height:60px; }
+
+  /* Reaction info */
+  .rxn-box {
+    background:var(--panel2); border:1px solid var(--border);
+    border-radius:8px; padding:10px;
+  }
+  .rxn-title { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+  .rxn-line { font-size:11px; color:var(--text); margin-bottom:4px; line-height:1.5; }
+  .rxn-line span.ox { color:var(--accent3); font-weight:700; }
+  .rxn-line span.red { color:var(--accent); font-weight:700; }
+  .rxn-line span.eq { color:var(--accent2); }
+
+  .electrode-info {
+    display:flex; gap:6px;
+  }
+  .ei-card {
+    flex:1; border-radius:7px; padding:8px; text-align:center; font-size:10px;
+  }
+  .ei-card.an { background:rgba(255,107,53,0.1); border:1px solid rgba(255,107,53,0.4); }
+  .ei-card.ka { background:rgba(0,212,255,0.1); border:1px solid rgba(0,212,255,0.4); }
+  .ei-sym { font-family:'Orbitron', sans-serif; font-size:14px; font-weight:900; }
+  .ei-sym.an { color:var(--accent3); }
+  .ei-sym.ka { color:var(--accent); }
+  .ei-label { color:var(--muted); font-size:9px; letter-spacing:1px; text-transform:uppercase; }
+  .ei-eo { color:var(--accent2); font-size:10px; font-family:'Orbitron', sans-serif; }
+
+  /* ===== PENGAMATAN TAB ===== */
+  .obs-scroll { flex:1; overflow:hidden; padding:12px 20px; }
+  .obs-scroll::-webkit-scrollbar { width:4px; }
+  .obs-scroll::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  .obs-title {
+    font-family:'Orbitron', sans-serif; font-size:11px; font-weight:700;
+    color:#fff; margin-bottom:10px;
+    border-bottom:1px solid var(--border); padding-bottom:6px;
+  }
+  .obs-table {
+    width:100%; border-collapse:collapse; font-size:11px;
+  }
+  .obs-table th {
+    background:rgba(0,212,255,0.1);
+    border:1px solid var(--border);
+    padding:6px 8px; text-align:center;
+    font-family:'Orbitron', sans-serif; font-size:9px; letter-spacing:1px;
+    color:var(--accent); text-transform:uppercase;
+  }
+  .obs-table td {
+    border:1px solid var(--border);
+    padding:6px 8px; text-align:center;
+    color:var(--text); background:var(--panel);
+    transition:.2s; font-size:11px;
+  }
+  .obs-table tr:hover td { background:rgba(0,212,255,0.05); }
+  .obs-table td.highlight { color:var(--accent2); font-family:'Orbitron', sans-serif; font-weight:700; }
+  .obs-note {
+    margin-top:10px; background:rgba(0,212,255,0.05);
+    border:1px solid var(--border); border-radius:6px;
+    padding:8px 12px; font-size:11px; line-height:1.5; color:var(--muted);
+  }
+
+  /* ===== DISKUSI TAB ===== */
+  .diskusi-scroll { flex:1; overflow:hidden; padding:10px 20px; display:flex; flex-direction:column; }
+  .diskusi-scroll::-webkit-scrollbar { width:4px; }
+  .diskusi-scroll::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  .diskusi-q {
+    background:var(--panel); border:1px solid var(--border);
+    border-radius:8px; padding:8px 12px; margin-bottom:6px;
+    position:relative;
+  }
+  .diskusi-q::before {
+    content:''; position:absolute; top:0; left:0; bottom:0; width:3px;
+    background:var(--accent); border-radius:3px 0 0 3px;
+  }
+  .dq-num {
+    font-family:'Orbitron', sans-serif; font-size:9px; font-weight:700;
+    color:var(--accent); letter-spacing:2px; margin-bottom:3px;
+  }
+  .dq-text { font-size:11px; line-height:1.5; color:var(--text); margin-bottom:4px; }
+  .dq-answer {
+    background:var(--panel2); border-radius:8px; padding:12px;
+    font-size:12px; line-height:1.7; color:var(--muted);
+  }
+  .dq-answer strong { color:var(--accent2); }
+
+  /* ===== DISKUSI INPUT ===== */
+  .dq-textarea {
+    width:100%; min-height:50px; max-height:60px;
+    background:rgba(0,212,255,0.04);
+    border:1px solid rgba(0,212,255,0.25);
+    border-radius:6px; padding:6px 10px;
+    color:var(--text); font-family:'Exo 2', sans-serif;
+    font-size:11px; line-height:1.5;
+    resize:none; outline:none;
+    transition: border-color .25s, box-shadow .25s;
+    margin-top:4px;
+  }
+  .dq-textarea::placeholder { color:var(--muted); font-style:italic; }
+  .dq-textarea:focus {
+    border-color:var(--accent);
+    box-shadow: 0 0 10px rgba(0,212,255,0.2);
+    -webkit-user-select:text; user-select:text;
+  }
+  .dq-textarea { -webkit-user-select:text; user-select:text; }
+  .dq-textarea.answered {
+    border-color:var(--accent2);
+    box-shadow: 0 0 8px rgba(0,255,136,0.15);
+  }
+  .dq-char-count {
+    font-size:8px; color:var(--muted); text-align:right;
+    margin-top:1px; font-family:'Orbitron', sans-serif;
+    letter-spacing:1px;
+  }
+  .dq-char-count.ok { color:var(--accent2); }
+  .btn-submit-diskusi {
+    display:inline-block;
+    margin-top:8px; padding:8px 24px;
+    background: linear-gradient(135deg, var(--accent2), #00aa55);
+    border:none; border-radius:8px;
+    color:#000; font-family:'Orbitron', sans-serif;
+    font-size:11px; font-weight:700; letter-spacing:2px;
+    cursor:pointer; text-transform:uppercase;
+    box-shadow: var(--glow2), 0 4px 20px rgba(0,255,136,0.25);
+    transition: all .3s;
+  }
+  .btn-submit-diskusi:hover {
+    transform:translateY(-2px);
+    box-shadow: 0 0 30px rgba(0,255,136,0.5), 0 8px 30px rgba(0,255,136,0.3);
+  }
+  .btn-submit-diskusi:disabled {
+    background: linear-gradient(135deg, #1a3a2a, #0d2018);
+    color:var(--muted); cursor:not-allowed; transform:none;
+    box-shadow:none;
+  }
+  .btn-download-pdf {
+    display:inline-block;
+    margin-top:8px; margin-left:8px; padding:8px 24px;
+    background: linear-gradient(135deg, var(--accent), #0066cc);
+    border:none; border-radius:8px;
+    color:#fff; font-family:'Orbitron', sans-serif;
+    font-size:11px; font-weight:700; letter-spacing:2px;
+    cursor:pointer; text-transform:uppercase;
+    box-shadow: var(--glow), 0 4px 20px rgba(0,212,255,0.25);
+    transition: all .3s;
+  }
+  .btn-download-pdf:hover {
+    transform:translateY(-2px);
+    box-shadow: 0 0 30px rgba(0,212,255,0.5), 0 8px 30px rgba(0,212,255,0.3);
+  }
+  .btn-download-pdf:disabled {
+    background: linear-gradient(135deg, #1a2a3a, #0d1828);
+    color:var(--muted); cursor:not-allowed; transform:none;
+    box-shadow:none;
+  }
+  .diskusi-bottom-bar {
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:auto; padding-top:6px;
+  }
+  .submit-progress {
+    margin-top:6px;
+    background:rgba(0,212,255,0.05);
+    border:1px solid var(--border); border-radius:6px;
+    padding:6px 10px; font-size:10px; color:var(--muted);
+    display:flex; align-items:center; gap:8px;
+  }
+  .submit-progress .prog-bar-wrap {
+    flex:1; height:6px; background:rgba(255,255,255,0.06);
+    border-radius:3px; overflow:hidden;
+  }
+  .submit-progress .prog-bar {
+    height:100%; border-radius:3px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    transition: width .4s;
+  }
+
+  /* Toast notification */
+  #toast {
+    position:fixed; bottom:20px; right:20px; z-index:9999;
+    background:linear-gradient(135deg, #0a2040, #0a1628);
+    border:1px solid var(--accent2); border-radius:10px;
+    padding:12px 20px; color:var(--accent2);
+    font-size:13px; font-weight:600;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    transform:translateX(200%); transition:transform .4s cubic-bezier(.175,.885,.32,1.275);
+  }
+  #toast.show { transform:translateX(0); }
+
+  /* Scrollbar global */
+  ::-webkit-scrollbar { width:4px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+</style>
+</head>
+<body>
+
+<!-- ===== COVER ===== -->
+<div id="cover">
+  <div class="cover-inner">
+    <div class="cover-img-wrap">
+      <img src="https://yulinestiyarum.github.io/selvolta/sampul.png" alt="Sel Volta Ilustrasi" onerror="this.style.opacity='0.3'">
+    </div>
+    <div class="cover-text">
+      <div class="cover-badge">⚗️ Virtual Laboratory</div>
+      <div class="cover-title">Lab Maya Kimia</div>
+      <div class="cover-main">SEL <span>VOLTA</span></div>
+      <div class="cover-subtitle">Simulasi Interaktif Sel Elektrokimia & Pengukuran Beda Potensial Sel</div>
+      <div class="cover-meta">
+        <span>🎯 5 Percobaan</span>
+        <span>⚡ Animasi Elektron</span>
+        <span>📊 Digital Voltmeter</span>
+      </div>
+      <button class="btn-start" onclick="startApp()">▶ Mulai Praktikum</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="app">
+  <div class="header">
+    <div class="header-logo">⚗ Lab Maya</div>
+    <div style="width:1px; height:20px; background:var(--border);"></div>
+    <div class="header-title">SEL <span>VOLTA</span> – Menentukan Beda Potensial Sel</div>
+    <div class="header-spacer"></div>
+    <div class="header-info">
+      <div class="dot"></div>
+      <span>Simulasi Aktif</span>
+      <span style="color:var(--border)">|</span>
+      <span>SMA Kimia Kelas XII</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('tujuan')">🎯 Tujuan</button>
+    <button class="tab" onclick="switchTab('teori')">📖 Teori</button>
+    <button class="tab" onclick="switchTab('alatbahan')">🧪 Alat & Bahan</button>
+    <button class="tab" onclick="switchTab('simulasi')">⚡ Simulasi</button>
+    <button class="tab" onclick="switchTab('pengamatan')">📊 Pengamatan</button>
+    <button class="tab" onclick="switchTab('diskusi')">💬 Diskusi</button>
+  </div>
+
+  <div class="content">
+
+    <!-- TUJUAN -->
+    <div class="tab-panel active" id="tab-tujuan">
+      <div class="tujuan-panel">
+        <div class="section-card">
+          <div class="card-title">Tujuan Pembelajaran</div>
+          <ul class="tujuan-list">
+            <li><div class="num">1</div><div>Menerapkan konsep reaksi oksidasi-reduksi dalam sel elektrokimia.</div></li>
+          </ul>
+        </div>
+        <div class="section-card">
+          <div class="card-title">Tujuan Percobaan</div>
+          <ul class="tujuan-list">
+            <li><div class="num">1</div><div>Menerapkan konsep reaksi oksidasi-reduksi dalam sel elektrokimia (sel Volta).</div></li>
+            <li><div class="num">2</div><div>Mengamati aliran elektron dari anoda ke katoda serta pergerakan ion-ion melalui jembatan garam pada sistem sel Volta yang disimulasikan.</div></li>
+            <li><div class="num">3</div><div>Membaca dan mencatat beda potensial sel (E°sel) dari berbagai kombinasi pasangan logam yang terukur pada voltmeter.</div></li>
+            <li><div class="num">4</div><div>Menganalisis logam yang bertindak sebagai anoda dan katoda berdasarkan pengamatan terhadap arah aliran elektron dan polaritas elektroda pada simulasi.</div></li>
+            <li><div class="num">5</div><div>Menghitung potensial standar sel (E°sel) secara teoretis menggunakan data tabel potensial reduksi standar, kemudian memvalidasinya dengan hasil pembacaan beda potensial pada <em>virtual lab</em>.</div></li>
+          </ul>
+        </div>
+        <div class="section-card" style="grid-column:1/-1;">
+          <div class="card-title">Hasil Belajar</div>
+          <div class="hasil-grid">
+            <div class="hasil-item">
+              <div class="hi-title">🧠 Pengetahuan (Kognitif)</div>
+              <ul>
+                <li>Murid mampu menjelaskan prinsip kerja sel Volta.</li>
+                <li>Murid mampu menentukan anoda dan katoda berdasarkan arah aliran elektron pada simulasi.</li>
+                <li>Murid mampu menghitung potensial standar sel (E°sel) teoretis dan membandingkannya dengan hasil pengukuran <em>virtual lab</em>.</li>
+              </ul>
+            </div>
+            <div class="hasil-item">
+              <div class="hi-title">🔬 Keterampilan (Psikomotorik)</div>
+              <ul>
+                <li>Murid terampil mengoperasikan <em>virtual lab</em> untuk merangkai dan menguji berbagai pasangan elektroda.</li>
+                <li>Murid mampu mengumpulkan dan menyajikan data hasil simulasi ke dalam tabel pengamatan secara sistematis.</li>
+              </ul>
+            </div>
+            <div class="hasil-item">
+              <div class="hi-title">💡 Sikap (Afektif)</div>
+              <ul>
+                <li>Murid menunjukkan sikap teliti, objektif, dan kritis dalam mengamati serta mencatat data hasil percobaan.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEORI -->
+    <div class="tab-panel" id="tab-teori">
+      <div class="teori-layout">
+        <div class="teori-text">
+          <div class="teori-title">📖 Dasar Teori – Sel Volta</div>
+          <p>
+            <strong>Sel Volta</strong> atau sel Galvani merupakan sel elektrokimia yang mengubah energi kimia dari reaksi redoks yang berlangsung <strong>spontan</strong> menjadi energi listrik. Rangkaian dasar sel Volta terdiri dari dua elektroda logam yang dicelupkan ke dalam larutan elektrolitnya masing-masing, dihubungkan oleh sirkuit luar (kabel pengantar elektron) dan sirkuit dalam (jembatan garam).
+          </p>
+          <!-- Ilustrasi Sel Volta Zn-Cu -->
+          <div style="text-align:center; margin:8px 0;">
+            <img src="https://yulinestiyarum.github.io/selvolta/teori.png"
+                 alt="Ilustrasi Sel Volta"
+                 style="max-width:220px; width:100%; border-radius:8px; border:1px solid var(--border); box-shadow:0 0 14px rgba(0,212,255,0.2);"
+                 onerror="this.style.display='none'">
+            <div style="font-size:9px; color:var(--muted); margin-top:3px;">Ilustrasi Sel Volta – Rangkaian Dasar</div>
+          </div>
+          <p>Prinsip kerja sel Volta didasarkan pada <strong>dua setengah reaksi</strong> yang terjadi pada elektroda:</p>
+          <div class="electrode-cards">
+            <div class="e-card anoda">
+              <div class="e-symbol">⊖</div>
+              <div class="e-name" style="color:var(--accent3)">Anoda</div>
+              <div class="e-desc">Kutub negatif. Tempat terjadinya <strong style="color:var(--accent3)">reaksi oksidasi</strong> (pelepasan elektron). Logam terlarut ke dalam larutan.</div>
+            </div>
+            <div class="e-card katoda">
+              <div class="e-symbol">⊕</div>
+              <div class="e-name" style="color:var(--accent)">Katoda</div>
+              <div class="e-desc">Kutub positif. Tempat terjadinya <strong style="color:var(--accent)">reaksi reduksi</strong> (penerimaan elektron). Ion logam mengendap.</div>
+            </div>
+          </div>
+          <p>Elektron akan mengalir dari <strong>anoda → katoda</strong> melalui sirkuit luar. Sementara itu, jembatan garam berfungsi menetralkan kelebihan muatan ion positif dan negatif pada kedua kompartemen sehingga aliran listrik dapat terus berjalan.</p>
+          <div class="formula-box">
+            <div class="formula">E°<sub>sel</sub> = E°<sub>katoda</sub> − E°<sub>anoda</sub></div>
+            <div class="formula-label">Suatu reaksi redoks akan berlangsung spontan jika E°sel &gt; 0 (bernilai positif)</div>
+          </div>
+          <p>Dalam eksperimen virtual, besaran tegangan ini akan terbaca secara langsung pada layar <strong>voltmeter digital</strong>, yang kemudian dapat divalidasi dengan hasil perhitungan teoritis.</p>
+        </div>
+        <div class="teori-sidebar">
+          <div class="sr-title">⚡ Deret Volta</div>
+          <div class="deret-volta">
+            <div class="deret-title">Potensial Reduksi Standar (E°)</div>
+            <div class="deret-list" id="deretList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALAT BAHAN -->
+    <div class="tab-panel" id="tab-alatbahan">
+      <div class="alatbahan-scroll">
+        <div class="ab-section-title">🌉 Bahan – Jembatan Garam</div>
+        <div class="alat-grid">
+          <div class="alat-card">
+            <img src="https://yulinestiyarum.github.io/selvolta/pipau.png" alt="Pipa U">
+            <div class="ac-name">Larutan KNO₃</div>
+            <div class="ac-desc">Dalam agar-agar, dimasukkan pada Pipa U</div>
+          </div>
+        </div>
+        <div class="ab-section-title">🔧 Alat</div>
+        <div class="alat-grid" id="alatGrid"></div>
+        <div class="ab-section-title">⚗️ Bahan – Elektroda</div>
+        <div class="alat-grid" id="elektrodaGrid"></div>
+        <div class="ab-section-title">🧪 Bahan – Larutan Elektrolit</div>
+        <div class="alat-grid" id="larutanGrid"></div>
+      </div>
+    </div>
+
+    <!-- SIMULASI -->
+    <div class="tab-panel" id="tab-simulasi">
+      <div class="sim-layout">
+        <div class="sim-left">
+          <div class="sim-left-title">📋 Percobaan</div>
+          <div class="exp-list" id="expList"></div>
+        </div>
+        <div class="sim-main">
+          <div class="sim-canvas-wrap">
+            <canvas id="simCanvas"></canvas>
+          </div>
+          <div class="sim-controls">
+            <div class="sim-step-info">
+              <div class="step-label">Langkah</div>
+              <div id="stepDesc" style="font-weight:600;">Pilih percobaan di sebelah kiri untuk memulai.</div>
+            </div>
+            <button class="btn-sim btn-reset" onclick="resetSim()">↺ Reset</button>
+            <button class="btn-sim btn-next" id="btnNext" onclick="nextStep()" disabled>Langkah Berikutnya ▶</button>
+          </div>
+        </div>
+        <div class="sim-right">
+          <div class="sr-title">⚡ Voltmeter Digital</div>
+          <div class="voltmeter-display">
+            <div class="vm-label">Beda Potensial Sel</div>
+            <div class="vm-screen" id="vmScreen">- - -</div>
+            <div class="vm-unit">Volt (V)</div>
+            <div class="vm-needle-wrap">
+              <svg viewBox="0 0 160 60" id="vmNeedle">
+                <defs>
+                  <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#ff4444"/>
+                    <stop offset="50%" stop-color="#ffd700"/>
+                    <stop offset="100%" stop-color="#00ff88"/>
+                  </linearGradient>
+                </defs>
+                <path d="M10,55 A70,70 0 0,1 150,55" fill="none" stroke="url(#arcGrad)" stroke-width="4" stroke-linecap="round"/>
+                <line id="needleLine" x1="80" y1="55" x2="80" y2="10" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round" style="transform-origin:80px 55px; transform:rotate(0deg); transition:transform 1s ease;"/>
+                <circle cx="80" cy="55" r="4" fill="#00ff88"/>
+                <text x="10" y="52" fill="#666" font-size="8">0</text>
+                <text x="145" y="52" fill="#666" font-size="8">3V</text>
+              </svg>
+            </div>
+          </div>
+
+          <div class="electrode-info" id="electrodeInfo">
+            <div class="ei-card an">
+              <div class="ei-sym an" id="anodaSym">–</div>
+              <div class="ei-label">Anoda (−)</div>
+              <div class="ei-eo" id="anodaEo">E° = ?</div>
+            </div>
+            <div class="ei-card ka">
+              <div class="ei-sym ka" id="katodaSym">–</div>
+              <div class="ei-label">Katoda (+)</div>
+              <div class="ei-eo" id="katodaEo">E° = ?</div>
+            </div>
+          </div>
+
+          <div class="rxn-box">
+            <div class="rxn-title">Setengah Reaksi</div>
+            <div class="rxn-line" id="rxnAnoda">Anoda: –</div>
+            <div class="rxn-line" id="rxnKatoda">Katoda: –</div>
+            <div class="rxn-line" id="rxnTotal" style="border-top:1px solid var(--border); padding-top:6px; margin-top:6px;">E°sel = –</div>
+          </div>
+
+          <div class="rxn-box">
+            <div class="rxn-title">Status</div>
+            <div id="simStatus" style="font-size:11px; color:var(--muted); line-height:1.6;">Pilih percobaan untuk memulai simulasi.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENGAMATAN -->
+    <div class="tab-panel" id="tab-pengamatan">
+      <div class="obs-scroll">
+        <div class="obs-title">📊 Tabel Pengamatan – Hasil Simulasi Sel Volta</div>
+        <table class="obs-table">
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>Pasangan Logam</th>
+              <th>Anoda (−)</th>
+              <th>Katoda (+)</th>
+              <th>Reaksi Oksidasi (Anoda)</th>
+              <th>Reaksi Reduksi (Katoda)</th>
+              <th>E°sel Teoritis (V)</th>
+              <th>E°sel Terukur (V)</th>
+            </tr>
+          </thead>
+          <tbody id="obsTableBody"></tbody>
+        </table>
+        <div class="obs-note">
+          📌 <strong>Catatan:</strong> E°sel Teoritis dihitung dengan rumus <strong>E°sel = E°katoda − E°anoda</strong>. E°sel Terukur ditampilkan pada layar voltmeter digital saat percobaan berlangsung. Reaksi bersifat spontan jika E°sel &gt; 0.
+        </div>
+      </div>
+    </div>
+
+    <!-- DISKUSI -->
+    <div class="tab-panel" id="tab-diskusi">
+      <div class="diskusi-scroll">
+        <div style="font-family:'Orbitron', sans-serif; font-size:11px; color:#fff; margin-bottom:6px; padding-bottom:6px; border-bottom:1px solid var(--border);">💬 Pertanyaan Diskusi</div>
+        <div id="diskusiContent" style="flex:1; display:flex; flex-direction:column; overflow:hidden;"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ===== AUDIO ENGINE =====
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let actx = null;
+function getCtx() { if(!actx) actx = new AudioCtx(); return actx; }
+
+function playTone(freq=440, dur=0.15, type='sine', vol=0.3) {
+  try {
+    const ctx = getCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = type; osc.frequency.value = freq;
+    gain.gain.setValueAtTime(vol, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    osc.start(); osc.stop(ctx.currentTime + dur);
+  } catch(e){}
+}
+
+function playClick() { playTone(800, 0.08, 'square', 0.2); }
+function playPour() {
+  try {
+    const ctx = getCtx();
+    const buf = ctx.createBuffer(1, ctx.sampleRate*0.8, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for(let i=0;i<data.length;i++) data[i]=(Math.random()*2-1)*Math.exp(-i/(ctx.sampleRate*0.2))*0.4;
+    const src = ctx.createBufferSource();
+    const filter = ctx.createBiquadFilter();
+    filter.type='bandpass'; filter.frequency.value=800; filter.Q.value=0.5;
+    src.buffer=buf; src.connect(filter); filter.connect(ctx.destination);
+    src.start();
+  } catch(e){}
+}
+function playElectric() {
+  try {
+    const ctx = getCtx();
+    [440,550,660,880].forEach((f,i)=>{
+      setTimeout(()=>playTone(f,0.1,'sawtooth',0.15),i*60);
+    });
+  } catch(e){}
+}
+function playSuccess() {
+  [523,659,784,1047].forEach((f,i)=>setTimeout(()=>playTone(f,0.2,'sine',0.3),i*100));
+}
+function playBubble() {
+  playTone(600+Math.random()*200, 0.05, 'sine', 0.1);
+}
+
+// ===== DATA =====
+const metals = {
+  Mg: { eo: -2.37, color: '#c8c8d4', label: 'Mg²⁺/Mg', solution: 'MgSO₄' },
+  Al: { eo: -1.66, color: '#b0b8c4', label: 'Al³⁺/Al', solution: 'Al₂(SO₄)₃' },
+  Zn: { eo: -0.76, color: '#8ab4c8', label: 'Zn²⁺/Zn', solution: 'ZnSO₄' },
+  Ni: { eo: -0.25, color: '#8ab88a', label: 'Ni²⁺/Ni', solution: 'NiSO₄' },
+  Pb: { eo: -0.13, color: '#9090a0', label: 'Pb²⁺/Pb', solution: 'Pb(NO₃)₂' },
+  Cu: { eo: +0.34, color: '#e08040', label: 'Cu²⁺/Cu', solution: 'CuSO₄' },
+  Ag: { eo: +0.80, color: '#d0d0d0', label: 'Ag⁺/Ag', solution: 'AgNO₃' },
+};
+
+const experiments = [
+  { id:1, metal1:'Mg', metal2:'Cu', name:'Mg | Cu', e1sol:'MgSO₄', e2sol:'CuSO₄',
+    steps:['Pilih elektroda Magnesium (Mg) dan celupkan ke gelas kimia pertama','Tuangkan larutan MgSO₄ 1 M ke dalam gelas kimia pertama','Pilih elektroda Tembaga (Cu) dan celupkan ke gelas kimia kedua','Tuangkan larutan CuSO₄ 1 M ke dalam gelas kimia kedua','Pasang Jembatan Garam (KNO₃) di antara kedua gelas kimia','Sambungkan kabel dari Voltmeter ke masing-masing elektroda','Klik Mulai – baca E°sel pada voltmeter digital'] },
+  { id:2, metal1:'Cu', metal2:'Ag', name:'Cu | Ag', e1sol:'CuSO₄', e2sol:'AgNO₃',
+    steps:['Pilih elektroda Tembaga (Cu) dan celupkan ke gelas kimia pertama','Tuangkan larutan CuSO₄ 1 M ke dalam gelas kimia pertama','Pilih elektroda Perak (Ag) dan celupkan ke gelas kimia kedua','Tuangkan larutan AgNO₃ 1 M ke dalam gelas kimia kedua','Pasang Jembatan Garam (KNO₃) di antara kedua gelas kimia','Sambungkan kabel dari Voltmeter ke masing-masing elektroda','Klik Mulai – baca E°sel pada voltmeter digital'] },
+  { id:3, metal1:'Al', metal2:'Zn', name:'Al | Zn', e1sol:'Al₂(SO₄)₃', e2sol:'ZnSO₄',
+    steps:['Pilih elektroda Aluminium (Al) dan celupkan ke gelas kimia pertama','Tuangkan larutan Al₂(SO₄)₃ 1 M ke dalam gelas kimia pertama','Pilih elektroda Seng (Zn) dan celupkan ke gelas kimia kedua','Tuangkan larutan ZnSO₄ 1 M ke dalam gelas kimia kedua','Pasang Jembatan Garam (KNO₃) di antara kedua gelas kimia','Sambungkan kabel dari Voltmeter ke masing-masing elektroda','Klik Mulai – baca E°sel pada voltmeter digital'] },
+  { id:4, metal1:'Zn', metal2:'Pb', name:'Zn | Pb', e1sol:'ZnSO₄', e2sol:'Pb(NO₃)₂',
+    steps:['Pilih elektroda Seng (Zn) dan celupkan ke gelas kimia pertama','Tuangkan larutan ZnSO₄ 1 M ke dalam gelas kimia pertama','Pilih elektroda Timbal (Pb) dan celupkan ke gelas kimia kedua','Tuangkan larutan Pb(NO₃)₂ 1 M ke dalam gelas kimia kedua','Pasang Jembatan Garam (KNO₃) di antara kedua gelas kimia','Sambungkan kabel dari Voltmeter ke masing-masing elektroda','Klik Mulai – baca E°sel pada voltmeter digital'] },
+  { id:5, metal1:'Zn', metal2:'Ni', name:'Zn | Ni', e1sol:'ZnSO₄', e2sol:'NiSO₄',
+    steps:['Pilih elektroda Seng (Zn) dan celupkan ke gelas kimia pertama','Tuangkan larutan ZnSO₄ 1 M ke dalam gelas kimia pertama','Pilih elektroda Nikel (Ni) dan celupkan ke gelas kimia kedua','Tuangkan larutan NiSO₄ 1 M ke dalam gelas kimia kedua','Pasang Jembatan Garam (KNO₃) di antara kedua gelas kimia','Sambungkan kabel dari Voltmeter ke masing-masing elektroda','Klik Mulai – baca E°sel pada voltmeter digital'] },
+];
+
+// Determine anoda/katoda
+function getAnodaKatoda(exp) {
+  const m1 = metals[exp.metal1], m2 = metals[exp.metal2];
+  if(m1.eo < m2.eo) {
+    return { anoda: exp.metal1, katoda: exp.metal2, esel: m2.eo - m1.eo };
+  } else {
+    return { anoda: exp.metal2, katoda: exp.metal1, esel: m1.eo - m2.eo };
+  }
+}
+
+// ===== STATE =====
+let currentExp = null;
+let currentStep = 0;
+let simRunning = false;
+let particles = [];
+let ions = [];
+let electronParticles = [];
+let pourAnim = null;
+let canvasAnim = null;
+let completedExps = new Set();
+let observationData = [];
+
+// ===== COVER =====
+function createParticles() {
+  const cover = document.getElementById('cover');
+  for(let i=0;i<25;i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = 2 + Math.random()*4;
+    const hue = Math.random() > 0.5 ? 195 : 150;
+    p.style.cssText = `
+      width:${size}px; height:${size}px;
+      background:hsl(${hue},100%,60%);
+      left:${Math.random()*100}%;
+      animation-duration:${6+Math.random()*8}s;
+      animation-delay:${-Math.random()*10}s;
+      opacity:.6;
+      box-shadow:0 0 ${size*2}px hsl(${hue},100%,60%);
+    `;
+    cover.appendChild(p);
+  }
+}
+
+function startApp() {
+  playSuccess();
+  const cover = document.getElementById('cover');
+  cover.style.transition = 'opacity .8s, transform .8s';
+  cover.style.opacity = '0';
+  cover.style.transform = 'scale(1.05)';
+  setTimeout(()=>{
+    cover.style.display = 'none';
+    const app = document.getElementById('app');
+    app.style.display = 'flex';
+    initApp();
+  }, 800);
+}
+
+// ===== INIT =====
+function initApp() {
+  buildDeretVolta();
+  buildAlatBahan();
+  buildExpList();
+  buildObsTable();
+  buildDiskusi();
+  initCanvas();
+}
+
+function buildDeretVolta() {
+  const data = [
+    {sym:'Mg', eo:-2.37, col:'#c8c8d4'},
+    {sym:'Al', eo:-1.66, col:'#b0b8c4'},
+    {sym:'Zn', eo:-0.76, col:'#8ab4c8'},
+    {sym:'Ni', eo:-0.25, col:'#8ab88a'},
+    {sym:'Pb', eo:-0.13, col:'#9090a0'},
+    {sym:'H',  eo: 0.00, col:'#ffffff'},
+    {sym:'Cu', eo:+0.34, col:'#e08040'},
+    {sym:'Ag', eo:+0.80, col:'#d0d0d0'},
+  ];
+  const el = document.getElementById('deretList');
+  el.innerHTML = data.map(d=>`
+    <div class="deret-item">
+      <div class="sym" style="background:${d.col}22; border:1px solid ${d.col}66; color:${d.col};">${d.sym}</div>
+      <span style="font-size:11px; color:var(--muted);">${d.sym === 'H' ? 'H⁺/H₂' : d.sym+'ⁿ⁺/'+d.sym}</span>
+      <span class="eo ${d.eo < 0 ? 'neg' : ''}">${d.eo >= 0 ? '+' : ''}${d.eo.toFixed(2)} V</span>
+    </div>
+  `).join('');
+}
+
+const alatData = [
+  { name:'Gelas Kimia', desc:'Wadah kompartemen anoda dan katoda', img:'https://yulinestiyarum.github.io/Gelas-Kimia/Gelas-Kimia.png' },
+  { name:'Voltmeter Digital', desc:'Mengukur beda potensial sel', img:'https://yulinestiyarum.github.io/selvolta/voltmeter.png' },
+  { name:'Kabel & Penjepit Buaya', desc:'Sirkuit luar untuk aliran elektron', img:'https://yulinestiyarum.github.io/selvolta/kabel.png' },
+  { name:'Jembatan Garam (Pipa U)', desc:'Sirkuit dalam, menjaga netralitas muatan', img:'https://yulinestiyarum.github.io/selvolta/pipau.png' },
+];
+const elektrodaData = [
+  { name:'Magnesium (Mg)', img:'https://yulinestiyarum.github.io/selvolta/magnesium.png' },
+  { name:'Tembaga (Cu)', img:'https://yulinestiyarum.github.io/selvolta/tembaga.png' },
+  { name:'Perak (Ag)', img:'https://yulinestiyarum.github.io/selvolta/perak.png' },
+  { name:'Aluminium (Al)', img:'https://yulinestiyarum.github.io/selvolta/aluminium.png' },
+  { name:'Seng (Zn)', img:'https://yulinestiyarum.github.io/selvolta/seng.png' },
+  { name:'Timbal (Pb)', img:'https://yulinestiyarum.github.io/selvolta/timbal.png' },
+  { name:'Nikel (Ni)', img:'https://yulinestiyarum.github.io/selvolta/nikel.png' },
+];
+const larutanData = [
+  { name:'MgSO₄ 1 M', img:'https://yulinestiyarum.github.io/selvolta/MgSO4new.png' },
+  { name:'CuSO₄ 1 M', img:'https://yulinestiyarum.github.io/selvolta/CuSO4.png' },
+  { name:'AgNO₃ 1 M', img:'https://yulinestiyarum.github.io/selvolta/AgNO3.png' },
+  { name:'Al₂(SO₄)₃ 1 M', img:'https://yulinestiyarum.github.io/selvolta/aluminiumsulfat.png' },
+  { name:'ZnSO₄ 1 M', img:'https://yulinestiyarum.github.io/selvolta/ZnSO4.png' },
+  { name:'Pb(NO₃)₂ 1 M', img:'https://yulinestiyarum.github.io/selvolta/timbal(II)nitrat.png' },
+  { name:'NiSO₄ 1 M', img:'https://yulinestiyarum.github.io/selvolta/NiSO4.png' },
+];
+
+function buildAlatBahan() {
+  document.getElementById('alatGrid').innerHTML = alatData.map(a=>`
+    <div class="alat-card">
+      <img src="${a.img}" alt="${a.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 60 60%22><rect width=%2260%22 height=%2260%22 fill=%22%230a1628%22/><text x=%2230%22 y=%2235%22 font-size=%2212%22 fill=%22%2300d4ff%22 text-anchor=%22middle%22>?</text></svg>'">
+      <div class="ac-name">${a.name}</div>
+      ${a.desc ? `<div class="ac-desc">${a.desc}</div>` : ''}
+    </div>
+  `).join('');
+  document.getElementById('elektrodaGrid').innerHTML = elektrodaData.map(a=>`
+    <div class="alat-card">
+      <img src="${a.img}" alt="${a.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 60 60%22><rect width=%2260%22 height=%2260%22 fill=%22%230a1628%22/><text x=%2230%22 y=%2235%22 font-size=%2212%22 fill=%22%2300d4ff%22 text-anchor=%22middle%22>?</text></svg>'">
+      <div class="ac-name">${a.name}</div>
+    </div>
+  `).join('');
+  document.getElementById('larutanGrid').innerHTML = larutanData.map(a=>`
+    <div class="alat-card">
+      <img src="${a.img}" alt="${a.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 60 60%22><rect width=%2260%22 height=%2260%22 fill=%22%230a1628%22/><text x=%2230%22 y=%2235%22 font-size=%2212%22 fill=%22%2300d4ff%22 text-anchor=%22middle%22>?</text></svg>'">
+      <div class="ac-name">${a.name}</div>
+    </div>
+  `).join('');
+}
+
+function buildExpList() {
+  const el = document.getElementById('expList');
+  el.innerHTML = experiments.map(e=>`
+    <button class="exp-btn" id="expBtn${e.id}" onclick="selectExp(${e.id})">
+      <div class="exp-n">${e.id}</div>
+      <span>${e.name}</span>
+    </button>
+  `).join('');
+}
+
+function buildObsTable() {
+  const tbody = document.getElementById('obsTableBody');
+  const rows = experiments.map(exp=>{
+    const ak = getAnodaKatoda(exp);
+    return { exp, ak };
+  });
+  tbody.innerHTML = rows.map(({exp, ak}, i)=>{
+    const mA = metals[ak.anoda], mK = metals[ak.katoda];
+    const done = completedExps.has(exp.id);
+    return `
+      <tr>
+        <td>${exp.id}</td>
+        <td>${exp.metal1} | ${exp.metal2}</td>
+        <td>${done ? ak.anoda : '–'}</td>
+        <td>${done ? ak.katoda : '–'}</td>
+        <td>${done ? `${ak.anoda} → ${ak.anoda}ⁿ⁺ + ne⁻` : '–'}</td>
+        <td>${done ? `${ak.katoda}ⁿ⁺ + ne⁻ → ${ak.katoda}` : '–'}</td>
+        <td class="highlight">${done ? ak.esel.toFixed(2) : '–'}</td>
+        <td class="highlight">${done ? ak.esel.toFixed(2) : '–'}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+const diskusiAnswers = {};
+
+function buildDiskusi() {
+  const qs = [
+    {
+      q: 'Berdasarkan arah aliran elektron yang kalian amati pada simulasi virtual lab, jelaskan bagaimana cara kalian menentukan logam yang bertindak sebagai anoda (kutub negatif) dan katoda (kutub positif)! Berdasarkan temuan tersebut, tuliskan persamaan setengah reaksi oksidasi dan reduksi yang terjadi pada percobaan 1 sampai percobaan 5!',
+      placeholder: 'Contoh: Anoda adalah logam dengan potensial reduksi lebih rendah...',
+    },
+    {
+      q: 'Pada simulasi, kalian dapat mengamati adanya pergerakan ion-ion melalui jembatan garam saat sel Volta beroperasi. Jelaskan fungsi utama dari jembatan garam tersebut dalam sistem sel Volta!',
+      placeholder: 'Tuliskan fungsi jembatan garam berdasarkan pengamatan...',
+    },
+    {
+      q: 'Gunakan tabel potensial reduksi standar untuk menghitung nilai potensial sel (E°sel) secara teoritis dari kelima pasangan logam yang telah diujikan. Bandingkan hasil perhitungan teoritis tersebut dengan angka beda potensial yang telah kalian catat dari voltmeter digital di virtual lab. Apakah hasilnya konsisten? Jelaskan mengapa virtual lab dapat digunakan untuk memvalidasi konsep teoritis ini!',
+      placeholder: 'Tuliskan hasil perhitungan E°sel teoritis dan bandingkan...',
+    },
+    {
+      q: 'Dari kelima kombinasi percobaan yang dilakukan, pasangan logam manakah yang menghasilkan beda potensial (E°sel) paling besar dan paling kecil? Berdasarkan data tersebut dan posisi logam-logam tersebut di dalam Deret Volta, kesimpulan apa yang dapat kalian tarik mengenai hubungan antara jarak atau sifat kepolaran dua logam dengan besarnya energi listrik yang dihasilkan?',
+      placeholder: 'Sebutkan pasangan logam dengan E°sel terbesar dan terkecil...',
+    },
+  ];
+
+  const html = `<div style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:6px;">` + qs.map((q, i) => `
+    <div class="diskusi-q" id="dq-card-${i}">
+      <div class="dq-num">PERTANYAAN ${i+1}</div>
+      <div class="dq-text">${q.q}</div>
+      <textarea
+        class="dq-textarea"
+        id="dq-ans-${i}"
+        placeholder="✏️  ${q.placeholder}"
+        oninput="onDiskusiInput(${i})"
+      ></textarea>
+      <div class="dq-char-count" id="dq-cnt-${i}">0 karakter</div>
+    </div>
+  `).join('') + `</div>`;
+
+  document.getElementById('diskusiContent').innerHTML = html + `
+    <div class="diskusi-bottom-bar">
+      <div class="submit-progress" id="submitProgress" style="flex:1;">
+        <span id="submitProgressLabel" style="white-space:nowrap; font-family:'Orbitron',sans-serif; font-size:9px; letter-spacing:1px;">0 / ${qs.length} dijawab</span>
+        <div class="prog-bar-wrap">
+          <div class="prog-bar" id="submitProgressBar" style="width:0%"></div>
+        </div>
+      </div>
+      <button class="btn-submit-diskusi" id="btnSubmitDiskusi" onclick="submitDiskusi()" disabled>
+        📤 Kumpulkan
+      </button>
+      <button class="btn-download-pdf" id="btnDownloadPdf" onclick="downloadDiskusiPDF()" disabled>
+        📄 Unduh PDF
+      </button>
+    </div>
+  `;
+}
+
+function onDiskusiInput(idx) {
+  const ta = document.getElementById(`dq-ans-${idx}`);
+  const cnt = document.getElementById(`dq-cnt-${idx}`);
+  const len = ta.value.trim().length;
+  diskusiAnswers[idx] = ta.value.trim();
+
+  cnt.textContent = len + ' karakter';
+  if (len >= 20) {
+    cnt.classList.add('ok');
+    ta.classList.add('answered');
+  } else {
+    cnt.classList.remove('ok');
+    ta.classList.remove('answered');
+  }
+
+  // Update progress
+  const total = 4;
+  const answered = Object.values(diskusiAnswers).filter(v => v.length >= 20).length;
+  document.getElementById('submitProgressLabel').textContent = `${answered} / ${total} dijawab`;
+  document.getElementById('submitProgressBar').style.width = `${(answered/total)*100}%`;
+  document.getElementById('btnSubmitDiskusi').disabled = answered < total;
+}
+
+function submitDiskusi() {
+  playSuccess();
+
+  // Visual feedback: mark all cards submitted
+  for(let i=0;i<4;i++){
+    const card = document.getElementById(`dq-card-${i}`);
+    if(card) {
+      card.style.borderColor = 'var(--accent2)';
+      card.style.boxShadow = '0 0 16px rgba(0,255,136,0.18)';
+      card.querySelector('.dq-textarea').disabled = true;
+    }
+  }
+
+  const btn = document.getElementById('btnSubmitDiskusi');
+  btn.textContent = '✅ Terkumpul';
+  btn.disabled = true;
+  btn.style.background = 'linear-gradient(135deg, #0a3020, #0d2818)';
+  btn.style.color = 'var(--accent2)';
+  btn.style.border = '1px solid var(--accent2)';
+
+  // Enable PDF download
+  document.getElementById('btnDownloadPdf').disabled = false;
+
+  showToast('✅ Jawaban diskusi berhasil dikumpulkan!');
+}
+
+function downloadDiskusiPDF() {
+  playClick();
+  const qs = [
+    'Berdasarkan arah aliran elektron yang kalian amati pada simulasi virtual lab, jelaskan bagaimana cara kalian menentukan logam yang bertindak sebagai anoda (kutub negatif) dan katoda (kutub positif)! Berdasarkan temuan tersebut, tuliskan persamaan setengah reaksi oksidasi dan reduksi yang terjadi pada percobaan 1 sampai percobaan 5!',
+    'Pada simulasi, kalian dapat mengamati adanya pergerakan ion-ion melalui jembatan garam saat sel Volta beroperasi. Jelaskan fungsi utama dari jembatan garam tersebut dalam sistem sel Volta!',
+    'Gunakan tabel potensial reduksi standar untuk menghitung nilai potensial sel (E°sel) secara teoritis dari kelima pasangan logam yang telah diujikan. Bandingkan hasil perhitungan teoritis tersebut dengan angka beda potensial yang telah kalian catat dari voltmeter digital di virtual lab. Apakah hasilnya konsisten? Jelaskan mengapa virtual lab dapat digunakan untuk memvalidasi konsep teoritis ini!',
+    'Dari kelima kombinasi percobaan yang dilakukan, pasangan logam manakah yang menghasilkan beda potensial (E°sel) paling besar dan paling kecil? Berdasarkan data tersebut dan posisi logam-logam tersebut di dalam Deret Volta, kesimpulan apa yang dapat kalian tarik mengenai hubungan antara jarak atau sifat kepolaran dua logam dengan besarnya energi listrik yang dihasilkan?',
+  ];
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' });
+  const timeStr = now.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+
+  let content = '';
+  qs.forEach((q, i) => {
+    const ans = diskusiAnswers[i] || '(Belum dijawab)';
+    content += `
+      <div style="margin-bottom:18px; page-break-inside:avoid;">
+        <div style="font-weight:bold; color:#0066cc; font-size:12px; margin-bottom:4px;">PERTANYAAN ${i+1}</div>
+        <div style="font-size:12px; line-height:1.6; margin-bottom:8px; color:#333;">${q}</div>
+        <div style="background:#f0f7ff; border:1px solid #cce0ff; border-radius:6px; padding:10px 12px; font-size:12px; line-height:1.6; color:#222; white-space:pre-wrap;">${ans.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+      </div>
+    `;
+  });
+
+  const printHTML = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<title>Hasil Diskusi – Sel Volta</title>
+<style>
+  @media print { body { margin:0; } @page { margin:15mm; size:A4; } }
+  body { font-family:'Segoe UI',Tahoma,sans-serif; max-width:700px; margin:20px auto; color:#222; padding:20px; }
+  h1 { font-size:18px; color:#003366; border-bottom:2px solid #0066cc; padding-bottom:6px; margin-bottom:4px; }
+  .meta { font-size:11px; color:#777; margin-bottom:18px; }
+</style></head><body>
+  <h1>📝 Hasil Diskusi – Praktikum Sel Volta</h1>
+  <div class="meta">Lab Maya Kimia – SMA Kelas XII &nbsp;|&nbsp; ${dateStr} pukul ${timeStr}</div>
+  ${content}
+  <div style="margin-top:24px; border-top:1px solid #ccc; padding-top:10px; font-size:10px; color:#999; text-align:center;">
+    Dokumen ini dihasilkan oleh Virtual Lab Sel Volta
+  </div>
+  <script>window.onload=function(){window.print();}<\/script>
+</body></html>`;
+
+  const blob = new Blob([printHTML], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const win = window.open(url, '_blank');
+  if(!win) {
+    // Fallback: download as HTML file
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'Hasil_Diskusi_Sel_Volta.html';
+    a.click();
+    showToast('📄 File diskusi diunduh!');
+  } else {
+    showToast('📄 Halaman cetak PDF terbuka!');
+  }
+}
+
+// ===== TAB SWITCHING =====
+function switchTab(name) {
+  playClick();
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    const names = ['tujuan','teori','alatbahan','simulasi','pengamatan','diskusi'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if(name === 'simulasi') { setTimeout(resizeCanvas, 50); }
+  if(name === 'pengamatan') { buildObsTable(); }
+}
+
+// ===== CANVAS SIM =====
+const canvas = document.getElementById('simCanvas');
+const ctx2 = canvas.getContext('2d');
+let W, H;
+let simState = {
+  leftBeaker: false, leftElectrode: false, leftLiquid: false, leftLiquidY: 0, leftPourAnim: false,
+  rightBeaker: false, rightElectrode: false, rightLiquid: false, rightLiquidY: 0, rightPourAnim: false,
+  saltBridge: false, cables: false, running: false,
+};
+let electronAnim = [];
+let ionAnim = [];
+let bubbleAnim = [];
+let pourAnimLeft = null, pourAnimRight = null;
+let vmValue = null;
+let vmDisplaying = false;
+let t = 0;
+let imgs = {};
+
+function resizeCanvas() {
+  const wrap = canvas.parentElement;
+  W = wrap.clientWidth; H = wrap.clientHeight;
+  canvas.width = W; canvas.height = H;
+}
+
+function initCanvas() {
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  requestAnimationFrame(renderCanvas);
+}
+
+function resetSim() {
+  playClick();
+  currentStep = 0;
+  simRunning = false;
+  simState = {
+    leftBeaker:false, leftElectrode:false, leftLiquid:false, leftLiquidY:0, leftPourAnim:false,
+    rightBeaker:false, rightElectrode:false, rightLiquid:false, rightLiquidY:0, rightPourAnim:false,
+    saltBridge:false, cables:false, running:false,
+  };
+  electronAnim = []; ionAnim = []; bubbleAnim = [];
+  pourAnimLeft = null; pourAnimRight = null;
+  vmValue = null; vmDisplaying = false;
+  document.getElementById('vmScreen').textContent = '- - -';
+  document.getElementById('needleLine').style.transform = 'rotate(0deg)';
+  document.getElementById('anodaSym').textContent = '–';
+  document.getElementById('katodaSym').textContent = '–';
+  document.getElementById('anodaEo').textContent = 'E° = ?';
+  document.getElementById('katodaEo').textContent = 'E° = ?';
+  document.getElementById('rxnAnoda').innerHTML = 'Anoda: –';
+  document.getElementById('rxnKatoda').innerHTML = 'Katoda: –';
+  document.getElementById('rxnTotal').innerHTML = 'E°sel = –';
+  document.getElementById('simStatus').textContent = 'Simulasi direset. Pilih percobaan.';
+  document.getElementById('btnNext').disabled = true;
+  if(currentExp) {
+    document.getElementById('stepDesc').textContent = `Percobaan ${currentExp.id}: ${currentExp.name} – Tekan Langkah Berikutnya untuk mulai.`;
+    document.getElementById('btnNext').disabled = false;
+  }
+}
+
+function selectExp(id) {
+  playClick();
+  currentExp = experiments.find(e=>e.id===id);
+  currentStep = 0;
+  document.querySelectorAll('.exp-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('expBtn'+id).classList.add('active');
+  resetSim();
+  document.getElementById('stepDesc').textContent = `Percobaan ${id} (${currentExp.name}): Tekan "Langkah Berikutnya" untuk mulai.`;
+  document.getElementById('btnNext').disabled = false;
+  document.getElementById('simStatus').textContent = `Percobaan ${id} dipilih: ${currentExp.name}. Ikuti langkah-langkah simulasi.`;
+}
+
+function nextStep() {
+  if(!currentExp) return;
+  const steps = currentExp.steps;
+  if(currentStep >= steps.length) return;
+
+  playClick();
+  const step = currentStep;
+  currentStep++;
+  const desc = steps[step];
+  document.getElementById('stepDesc').textContent = `Langkah ${currentStep}/${steps.length}: ${desc}`;
+
+  // Animate based on step
+  if(step === 0) { // left electrode
+    simState.leftBeaker = true; simState.leftElectrode = true;
+    playElectric();
+    document.getElementById('simStatus').textContent = `Elektroda ${currentExp.metal1} dimasukkan ke kompartemen kiri.`;
+  } else if(step === 1) { // pour left
+    simState.leftPourAnim = true;
+    pourAnimLeft = { progress:0, done:false };
+    playPour();
+    document.getElementById('simStatus').textContent = `Menuangkan larutan ${currentExp.e1sol} ke kompartemen kiri...`;
+  } else if(step === 2) { // right electrode
+    simState.rightBeaker = true; simState.rightElectrode = true;
+    playElectric();
+    document.getElementById('simStatus').textContent = `Elektroda ${currentExp.metal2} dimasukkan ke kompartemen kanan.`;
+  } else if(step === 3) { // pour right
+    simState.rightPourAnim = true;
+    pourAnimRight = { progress:0, done:false };
+    playPour();
+    document.getElementById('simStatus').textContent = `Menuangkan larutan ${currentExp.e2sol} ke kompartemen kanan...`;
+  } else if(step === 4) { // salt bridge
+    simState.saltBridge = true;
+    playTone(440,0.3,'sine',0.2);
+    document.getElementById('simStatus').textContent = 'Jembatan garam dipasang. Ion-ion siap berpindah.';
+  } else if(step === 5) { // cables
+    simState.cables = true;
+    playTone(600,0.2,'square',0.15);
+    document.getElementById('simStatus').textContent = 'Kabel dihubungkan ke voltmeter dan elektroda.';
+  } else if(step === 6) { // run!
+    simState.running = true;
+    runExperiment();
+  }
+
+  if(currentStep >= steps.length) {
+    document.getElementById('btnNext').disabled = true;
+  }
+}
+
+function runExperiment() {
+  playSuccess();
+  const ak = getAnodaKatoda(currentExp);
+  vmValue = ak.esel;
+
+  // Animate voltmeter
+  setTimeout(()=>{
+    let v = 0;
+    const target = vmValue;
+    const interval = setInterval(()=>{
+      v += target * 0.05;
+      if(v >= target) { v = target; clearInterval(interval); }
+      const disp = v.toFixed(2);
+      document.getElementById('vmScreen').textContent = disp + ' V';
+      // needle: map 0-3V to -90 to +90 deg (left to right)
+      const angle = -90 + (v / 3) * 180;
+      document.getElementById('needleLine').style.transform = `rotate(${angle}deg)`;
+      playBubble();
+    }, 50);
+  }, 500);
+
+  // Electron particles
+  electronAnim = [];
+  ionAnim = [];
+  bubbleAnim = [];
+
+  // Update info panels
+  const mA = metals[ak.anoda], mK = metals[ak.katoda];
+  document.getElementById('anodaSym').textContent = ak.anoda;
+  document.getElementById('katodaSym').textContent = ak.katoda;
+  document.getElementById('anodaEo').textContent = `E° = ${mA.eo >= 0 ? '+' : ''}${mA.eo} V`;
+  document.getElementById('katodaEo').textContent = `E° = ${mK.eo >= 0 ? '+' : ''}${mK.eo} V`;
+  document.getElementById('rxnAnoda').innerHTML = `<span class="ox">Anoda: ${ak.anoda} → ${ak.anoda}ⁿ⁺ + ne⁻ (oksidasi)</span>`;
+  document.getElementById('rxnKatoda').innerHTML = `<span class="red">Katoda: ${ak.katoda}ⁿ⁺ + ne⁻ → ${ak.katoda} (reduksi)</span>`;
+  document.getElementById('rxnTotal').innerHTML = `<span class="eq">E°sel = ${mK.eo >= 0 ? '+' : ''}${mK.eo} − (${mA.eo >= 0 ? '+' : ''}${mA.eo}) = ${ak.esel.toFixed(2)} V ✓</span>`;
+  document.getElementById('simStatus').textContent = `⚡ Sel Volta aktif! Elektron mengalir dari ${ak.anoda} (anoda) → ${ak.katoda} (katoda). E°sel = ${ak.esel.toFixed(2)} V`;
+
+  completedExps.add(currentExp.id);
+  document.getElementById('expBtn'+currentExp.id).classList.add('done');
+
+  showToast(`✅ Percobaan ${currentExp.id} selesai! E°sel = ${ak.esel.toFixed(2)} V`);
+}
+
+// ===== CANVAS RENDERING =====
+function renderCanvas(ts) {
+  requestAnimationFrame(renderCanvas);
+  t = ts * 0.001;
+  if(!W || !H) { resizeCanvas(); return; }
+  ctx2.clearRect(0,0,W,H);
+
+  // Background
+  const bg = ctx2.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#060e1e'); bg.addColorStop(1,'#050d1a');
+  ctx2.fillStyle = bg; ctx2.fillRect(0,0,W,H);
+
+  // Grid
+  ctx2.strokeStyle = 'rgba(0,212,255,0.04)';
+  ctx2.lineWidth = 1;
+  for(let x=0;x<W;x+=40) { ctx2.beginPath(); ctx2.moveTo(x,0); ctx2.lineTo(x,H); ctx2.stroke(); }
+  for(let y=0;y<H;y+=40) { ctx2.beginPath(); ctx2.moveTo(0,y); ctx2.lineTo(W,y); ctx2.stroke(); }
+
+  if(!currentExp) {
+    ctx2.fillStyle = 'rgba(0,212,255,0.3)';
+    ctx2.font = '600 14px "Exo 2", sans-serif';
+    ctx2.textAlign = 'center';
+    ctx2.fillText('← Pilih percobaan dari panel kiri untuk memulai simulasi', W/2, H/2);
+    return;
+  }
+
+  const cx = W/2;
+  const beakerW = Math.min(W*0.22, 160);
+  const beakerH = Math.min(H*0.45, 200);
+  const beakerY = H*0.35;
+  const leftX = cx - W*0.22;
+  const rightX = cx + W*0.22 - beakerW;
+
+  // ===== DRAW BEAKERS =====
+  if(simState.leftBeaker) drawBeaker(leftX, beakerY, beakerW, beakerH, simState.leftLiquid, currentExp.metal1, currentExp.e1sol, 'left');
+  if(simState.rightBeaker) drawBeaker(rightX, beakerY, beakerW, beakerH, simState.rightLiquid, currentExp.metal2, currentExp.e2sol, 'right');
+
+  // ===== POUR ANIMATION =====
+  if(pourAnimLeft && !pourAnimLeft.done) {
+    pourAnimLeft.progress += 0.025;
+    if(pourAnimLeft.progress >= 1) { pourAnimLeft.done = true; simState.leftLiquid = true; simState.leftLiquidY = 1; }
+    else { simState.leftLiquidY = pourAnimLeft.progress; }
+    drawPour(leftX + beakerW*0.5, beakerY - 40, leftX + beakerW*0.5, beakerY + beakerH*(1-simState.leftLiquidY*0.65+0.05), currentExp.metal1, pourAnimLeft.progress);
+  }
+  if(pourAnimRight && !pourAnimRight.done) {
+    pourAnimRight.progress += 0.025;
+    if(pourAnimRight.progress >= 1) { pourAnimRight.done = true; simState.rightLiquid = true; simState.rightLiquidY = 1; }
+    else { simState.rightLiquidY = pourAnimRight.progress; }
+    drawPour(rightX + beakerW*0.5, beakerY - 40, rightX + beakerW*0.5, beakerY + beakerH*(1-pourAnimRight.progress*0.65+0.05), currentExp.metal2, pourAnimRight.progress);
+  }
+
+  // ===== SALT BRIDGE =====
+  if(simState.saltBridge) {
+    drawSaltBridge(leftX+beakerW*0.78, beakerY+beakerH*0.65, rightX+beakerW*0.22, beakerY+beakerH*0.65, cx, beakerY);
+  }
+
+  // ===== CABLES + VOLTMETER =====
+  if(simState.cables) {
+    drawCablesVoltmeter(leftX, rightX, beakerW, beakerY, beakerH, cx);
+  }
+
+  // ===== RUNNING: electrons + ions + labels =====
+  if(simState.running) {
+    const ak = getAnodaKatoda(currentExp);
+    // Electron particles on wire
+    spawnElectrons(leftX, rightX, beakerW, beakerY, beakerH, cx, ak);
+    drawElectrons();
+    // Ion particles in salt bridge
+    spawnIons(leftX, rightX, beakerW, beakerY, cx, ak);
+    drawIons();
+    // Bubbles in beakers
+    spawnBubbles(leftX, rightX, beakerW, beakerY, beakerH);
+    drawBubbles();
+    // Labels anoda/katoda
+    const isLeftAnoda = ak.anoda === currentExp.metal1;
+    drawLabel(leftX+beakerW/2, beakerY-60, isLeftAnoda ? `ANODA (−)` : 'KATODA (+)', isLeftAnoda ? '#ff6b35' : '#00d4ff');
+    drawLabel(rightX+beakerW/2, beakerY-60, isLeftAnoda ? 'KATODA (+)' : `ANODA (−)`, isLeftAnoda ? '#00d4ff' : '#ff6b35');
+  }
+
+  // Step counter
+  if(currentExp) {
+    ctx2.fillStyle = 'rgba(0,212,255,0.6)';
+    ctx2.font = '500 11px "Exo 2"';
+    ctx2.textAlign = 'left';
+    ctx2.fillText(`Percobaan ${currentExp.id}: ${currentExp.name}`, 14, 18);
+    ctx2.fillStyle = 'rgba(0,212,255,0.4)';
+    ctx2.fillText(`Langkah ${Math.min(currentStep, currentExp.steps.length)}/${currentExp.steps.length}`, 14, 34);
+  }
+}
+
+function drawBeaker(x, y, w, h, hasLiquid, metal, sol, side) {
+  // Beaker body
+  ctx2.strokeStyle = 'rgba(160,200,255,0.6)';
+  ctx2.lineWidth = 2;
+  ctx2.beginPath();
+  ctx2.moveTo(x, y);
+  ctx2.lineTo(x, y+h);
+  ctx2.lineTo(x+w, y+h);
+  ctx2.lineTo(x+w, y);
+  ctx2.stroke();
+  // Spout
+  ctx2.beginPath();
+  ctx2.moveTo(x-6, y); ctx2.lineTo(x+w+6, y);
+  ctx2.stroke();
+  // Liquid
+  if(hasLiquid) {
+    const liquidH = h * 0.62;
+    const liquidY = y + h - liquidH;
+    const m = metals[metal];
+    const lc = metalLiquidColor(metal);
+    const grad = ctx2.createLinearGradient(x, liquidY, x, y+h);
+    grad.addColorStop(0, lc+'99');
+    grad.addColorStop(1, lc+'cc');
+    ctx2.fillStyle = grad;
+    ctx2.fillRect(x+2, liquidY, w-4, liquidH-2);
+    // Liquid surface shimmer
+    ctx2.strokeStyle = lc+'66';
+    ctx2.lineWidth = 1;
+    for(let i=0;i<3;i++) {
+      const wy = liquidY + 4 + i*5;
+      ctx2.beginPath();
+      ctx2.moveTo(x+4, wy); ctx2.lineTo(x+w-4, wy);
+      ctx2.stroke();
+    }
+    // Label
+    ctx2.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx2.font = 'bold 11px "Exo 2"';
+    ctx2.textAlign = 'center';
+    ctx2.fillText(sol, x+w/2, y+h-12);
+  }
+  // Electrode
+  if(simState.leftElectrode && side==='left' || simState.rightElectrode && side==='right') {
+    const m = metals[metal];
+    const ex = x + w*0.5;
+    const eTop = y - 30;
+    const eBot = y + h * 0.8;
+    ctx2.strokeStyle = m.color;
+    ctx2.lineWidth = 8;
+    ctx2.lineCap = 'round';
+    ctx2.shadowColor = m.color;
+    ctx2.shadowBlur = 10;
+    ctx2.beginPath();
+    ctx2.moveTo(ex, eTop); ctx2.lineTo(ex, eBot);
+    ctx2.stroke();
+    ctx2.shadowBlur = 0;
+    ctx2.fillStyle = m.color;
+    ctx2.font = 'bold 12px "Orbitron"';
+    ctx2.textAlign = 'center';
+    ctx2.fillText(metal, ex, eTop-6);
+  }
+}
+
+function metalLiquidColor(metal) {
+  const map = {
+    Mg:'#d0d8e8', Al:'#b0c0d0', Zn:'#a0b8d0', Ni:'#70b870',
+    Pb:'#8888a0', Cu:'#2080ff', Ag:'#e8e8f0'
+  };
+  return map[metal] || '#88aacc';
+}
+
+function drawPour(fromX, fromY, toX, toY, metal, progress) {
+  if(progress <= 0) return;
+  const lc = metalLiquidColor(metal);
+  // Bottle tilting effect - cap points downward like real pouring
+  const tiltProgress = Math.min(progress*2, 1);
+  const angle = (Math.PI * 0.55) * tiltProgress; // tilt past 90 degrees so cap faces down
+
+  ctx2.save();
+  ctx2.translate(fromX + 30, fromY - 50);
+  ctx2.rotate(angle);
+  // Bottle body (bottom part - wider)
+  ctx2.fillStyle = lc+'88';
+  roundRect(ctx2, -12, -20, 24, 36, 4);
+  ctx2.fill();
+  ctx2.fillStyle = lc+'bb';
+  roundRect(ctx2, -12, -20, 24, 36 * (1 - progress * 0.7), 4);
+  ctx2.fill();
+  // Bottle neck (top part - narrower, this is where liquid pours from)
+  ctx2.fillStyle = '#aabbcc';
+  roundRect(ctx2, -5, 16, 10, 16, 3);
+  ctx2.fill();
+  // Cap/stopper
+  ctx2.fillStyle = '#667788';
+  roundRect(ctx2, -6, 30, 12, 5, 2);
+  ctx2.fill();
+  // Label on bottle
+  ctx2.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx2.font = '7px "Exo 2"';
+  ctx2.textAlign = 'center';
+  ctx2.save();
+  ctx2.fillText('1 M', 0, -2);
+  ctx2.restore();
+  ctx2.restore();
+
+  // Liquid stream
+  if(progress > 0.1) {
+    const streamPoints = 15;
+    for(let i=0;i<streamPoints;i++) {
+      const p = i/streamPoints;
+      const sx = fromX + (Math.sin(t*8+p*3)*3*(1-p));
+      const sy = fromY + (toY-fromY)*p;
+      ctx2.beginPath();
+      ctx2.arc(sx, sy, 3*(1-p*0.5), 0, Math.PI*2);
+      ctx2.fillStyle = lc + Math.floor(200-p*100).toString(16).padStart(2,'0');
+      ctx2.fill();
+    }
+    // Splash drops
+    for(let i=0;i<5;i++) {
+      const dx = Math.sin(t*10+i)*15;
+      const dy = Math.cos(t*10+i)*8;
+      ctx2.beginPath();
+      ctx2.arc(toX+dx, toY+dy, 2, 0, Math.PI*2);
+      ctx2.fillStyle = lc+'88';
+      ctx2.fill();
+    }
+  }
+}
+
+function drawSaltBridge(lx, ly, rx, ry, cx, beakerY) {
+  // Draw inverted-U pipe that arches over and dips into each beaker solution
+  const pipeW = 10; // pipe outer width
+  const pipeInner = 5;
+  const topY = beakerY - 60; // peak of the inverted U
+
+  // Outer pipe (thick)
+  ctx2.strokeStyle = '#c8aaff';
+  ctx2.lineWidth = pipeW;
+  ctx2.lineCap = 'round';
+  ctx2.lineJoin = 'round';
+  ctx2.shadowColor = '#aa88ff';
+  ctx2.shadowBlur = 14;
+  ctx2.beginPath();
+  ctx2.moveTo(lx, ly);            // bottom end submerged in left beaker
+  ctx2.lineTo(lx, topY + 14);    // up left side
+  ctx2.arcTo(lx, topY, lx + 14, topY, 14); // top-left curve
+  ctx2.lineTo(rx - 14, topY);    // across top
+  ctx2.arcTo(rx, topY, rx, topY + 14, 14); // top-right curve
+  ctx2.lineTo(rx, ry);           // down right side, end submerged in right beaker
+  ctx2.stroke();
+  ctx2.shadowBlur = 0;
+
+  // Inner fill (agar gel appearance)
+  ctx2.strokeStyle = '#7755cc';
+  ctx2.lineWidth = pipeInner;
+  ctx2.beginPath();
+  ctx2.moveTo(lx, ly);
+  ctx2.lineTo(lx, topY + 14);
+  ctx2.arcTo(lx, topY, lx + 14, topY, 14);
+  ctx2.lineTo(rx - 14, topY);
+  ctx2.arcTo(rx, topY, rx, topY + 14, 14);
+  ctx2.lineTo(rx, ry);
+  ctx2.stroke();
+
+  // Submerged tips — small glow dots to emphasize the ends are in the solution
+  ctx2.fillStyle = 'rgba(180,140,255,0.55)';
+  ctx2.shadowColor = '#cc99ff';
+  ctx2.shadowBlur = 10;
+  ctx2.beginPath(); ctx2.arc(lx, ly, 7, 0, Math.PI*2); ctx2.fill();
+  ctx2.beginPath(); ctx2.arc(rx, ry, 7, 0, Math.PI*2); ctx2.fill();
+  ctx2.shadowBlur = 0;
+
+  // Label above arch
+  ctx2.fillStyle = '#cc99ff';
+  ctx2.font = 'bold 10px "Exo 2"';
+  ctx2.textAlign = 'center';
+  ctx2.fillText('Jembatan Garam – KNO₃', cx, topY - 10);
+  ctx2.font = '9px "Exo 2"';
+  ctx2.fillStyle = '#9977cc';
+  ctx2.fillText('(Pipa U terbalik, ujung tercelup)', cx, topY - 0);
+}
+
+function drawCablesVoltmeter(lx, rx, bw, by, bh, cx) {
+  // Voltmeter box at top center
+  const vmX = cx - 52; const vmY = 10; const vmW = 104; const vmH = 52;
+
+  // Cable routing: electrode top → go up → horizontal to voltmeter sides → into voltmeter
+  const leftElecX  = lx + bw * 0.5;
+  const rightElecX = rx + bw * 0.5;
+  const wireTopY   = vmY + vmH; // wire comes into bottom of voltmeter
+
+  // Left cable (red – from left electrode up to voltmeter left port)
+  ctx2.strokeStyle = '#ff4444';
+  ctx2.lineWidth = 2.5;
+  ctx2.setLineDash([]);
+  ctx2.lineCap = 'round'; ctx2.lineJoin = 'round';
+  ctx2.beginPath();
+  ctx2.moveTo(leftElecX, by - 28);         // top of electrode
+  ctx2.lineTo(leftElecX, vmY + vmH + 14);  // up to near voltmeter
+  ctx2.lineTo(vmX + 14, vmY + vmH + 14);   // horizontal to voltmeter left
+  ctx2.lineTo(vmX + 14, vmY + vmH);        // into voltmeter
+  ctx2.stroke();
+
+  // Right cable (grey – from right electrode up to voltmeter right port)
+  ctx2.strokeStyle = '#aaaaaa';
+  ctx2.beginPath();
+  ctx2.moveTo(rightElecX, by - 28);
+  ctx2.lineTo(rightElecX, vmY + vmH + 14);
+  ctx2.lineTo(vmX + vmW - 14, vmY + vmH + 14);
+  ctx2.lineTo(vmX + vmW - 14, vmY + vmH);
+  ctx2.stroke();
+
+  // Red connector dot
+  ctx2.fillStyle = '#ff4444';
+  ctx2.beginPath(); ctx2.arc(vmX + 14, vmY + vmH, 4, 0, Math.PI*2); ctx2.fill();
+  // Grey connector dot
+  ctx2.fillStyle = '#aaaaaa';
+  ctx2.beginPath(); ctx2.arc(vmX + vmW - 14, vmY + vmH, 4, 0, Math.PI*2); ctx2.fill();
+
+  // Voltmeter box
+  ctx2.fillStyle = '#0a1628';
+  ctx2.strokeStyle = '#00d4ff';
+  ctx2.lineWidth = 2;
+  ctx2.shadowColor = '#00d4ff';
+  ctx2.shadowBlur = 12;
+  roundRect(ctx2, vmX, vmY, vmW, vmH, 8);
+  ctx2.fill(); ctx2.stroke();
+  ctx2.shadowBlur = 0;
+
+  // Voltmeter screen inner
+  ctx2.fillStyle = '#000e06';
+  roundRect(ctx2, vmX + 8, vmY + 18, vmW - 16, vmH - 26, 4);
+  ctx2.fill();
+
+  // Text
+  ctx2.fillStyle = '#00d4ff';
+  ctx2.font = 'bold 9px "Orbitron"';
+  ctx2.textAlign = 'center';
+  ctx2.fillText('VOLTMETER', cx, vmY + 13);
+  ctx2.font = 'bold 15px "Orbitron"';
+  ctx2.fillStyle = '#00ff88';
+  ctx2.shadowColor = '#00ff88';
+  ctx2.shadowBlur = 8;
+  ctx2.fillText(vmValue ? vmValue.toFixed(2) + ' V' : '- - -', cx, vmY + vmH - 10);
+  ctx2.shadowBlur = 0;
+
+  // Store cable path info globally for electron animation
+  window._cablePathLeft  = { x0: leftElecX,  y0: by - 28, x1: leftElecX,  y1: vmY + vmH + 14, x2: vmX + 14,        y2: vmY + vmH + 14, x3: vmX + 14,        y3: vmY + vmH };
+  window._cablePathRight = { x0: rightElecX, y0: by - 28, x1: rightElecX, y1: vmY + vmH + 14, x2: vmX + vmW - 14, y2: vmY + vmH + 14, x3: vmX + vmW - 14, y3: vmY + vmH };
+  window._vmBox = { x: vmX, y: vmY, w: vmW, h: vmH };
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.lineTo(x+w-r, y);
+  ctx.quadraticCurveTo(x+w,y, x+w,y+r);
+  ctx.lineTo(x+w, y+h-r);
+  ctx.quadraticCurveTo(x+w,y+h, x+w-r,y+h);
+  ctx.lineTo(x+r, y+h);
+  ctx.quadraticCurveTo(x,y+h, x,y+h-r);
+  ctx.lineTo(x, y+r);
+  ctx.quadraticCurveTo(x,y, x+r,y);
+  ctx.closePath();
+}
+
+// Electron animation – follows cable path through voltmeter
+let eTime = 0;
+
+// Returns {x,y} along the 4-segment cable path for t in [0,1]
+function cablePoint(path, t) {
+  // Segments: (x0,y0)→(x1,y1)→(x2,y2)→(x3,y3)
+  const segs = [
+    { x0:path.x0, y0:path.y0, x1:path.x1, y1:path.y1 },
+    { x0:path.x1, y0:path.y1, x1:path.x2, y1:path.y2 },
+    { x0:path.x2, y0:path.y2, x1:path.x3, y1:path.y3 },
+  ];
+  // Total length (approx)
+  const lens = segs.map(s => Math.hypot(s.x1-s.x0, s.y1-s.y0));
+  const total = lens.reduce((a,b)=>a+b, 0);
+  let dist = t * total;
+  for(let i=0;i<segs.length;i++) {
+    if(dist <= lens[i] || i === segs.length-1) {
+      const f = lens[i] > 0 ? dist/lens[i] : 0;
+      return { x: segs[i].x0 + (segs[i].x1-segs[i].x0)*f, y: segs[i].y0 + (segs[i].y1-segs[i].y0)*f };
+    }
+    dist -= lens[i];
+  }
+  return { x:path.x3, y:path.y3 };
+}
+
+function spawnElectrons(lx, rx, bw, by, bh, cx, ak) {
+  eTime++;
+  if(eTime % 10 === 0 && electronAnim.length < 15) {
+    const isLeftAnoda = ak.anoda === currentExp.metal1;
+    electronAnim.push({
+      t: 0,
+      isLeftAnoda,
+      speed: 0.008 + Math.random() * 0.004,
+      phase: 'toVM', // toVM → throughVM → fromVM
+    });
+  }
+  electronAnim = electronAnim.filter(e => {
+    e.t += e.speed;
+    return e.t < 1;
+  });
+}
+
+function drawElectrons() {
+  if(!window._cablePathLeft || !window._cablePathRight) return;
+  electronAnim.forEach(e => {
+    const p = e.t;
+    // First half [0,0.5]: anoda → voltmeter entrance
+    // Second half [0.5,1]: voltmeter exit → katoda
+    let pos;
+    let col;
+    if(p < 0.5) {
+      // Traveling from anoda side to voltmeter
+      const tLocal = p / 0.5;
+      const path = e.isLeftAnoda ? window._cablePathLeft : window._cablePathRight;
+      pos = cablePoint(path, tLocal);
+      col = '#00ff88';
+    } else {
+      // Traveling from voltmeter to katoda
+      const tLocal = (p - 0.5) / 0.5;
+      const path = e.isLeftAnoda ? window._cablePathRight : window._cablePathLeft;
+      // Reverse the path (katoda side exit)
+      const revPath = { x0: path.x3, y0: path.y3, x1: path.x2, y1: path.y2, x2: path.x1, y2: path.y1, x3: path.x0, y3: path.y0 };
+      pos = cablePoint(revPath, tLocal);
+      col = '#00d4ff';
+    }
+
+    // Glow dot
+    ctx2.shadowColor = col;
+    ctx2.shadowBlur = 10;
+    ctx2.fillStyle = col;
+    ctx2.beginPath();
+    ctx2.arc(pos.x, pos.y, 4, 0, Math.PI * 2);
+    ctx2.fill();
+    ctx2.shadowBlur = 0;
+
+    // e⁻ label mid-journey
+    if(p > 0.2 && p < 0.45 || p > 0.55 && p < 0.8) {
+      ctx2.fillStyle = col;
+      ctx2.font = 'bold 8px "Orbitron"';
+      ctx2.textAlign = 'center';
+      ctx2.fillText('e⁻', pos.x, pos.y - 8);
+    }
+  });
+  ctx2.shadowBlur = 0;
+}
+
+function bezier(a, b, c, t) {
+  return (1-t)*(1-t)*a + 2*(1-t)*t*b + t*t*c;
+}
+
+function spawnIons(lx, rx, bw, by, cx, ak) {
+  if(ionAnim.length < 14 && Math.random() < 0.12) {
+    // K+ goes from anoda side to katoda side; NO3- goes opposite
+    const isLeftAnoda = ak.anoda === currentExp.metal1;
+    const goRight = Math.random() > 0.5; // K+ direction
+    ionAnim.push({
+      t: Math.random() * 0.3, // stagger start
+      goRight,
+      speed: 0.003 + Math.random() * 0.003,
+      label: goRight ? 'K⁺' : 'NO₃⁻',
+      color: goRight ? '#ffd700' : '#cc88ff',
+    });
+  }
+  ionAnim = ionAnim.filter(i=>{ i.t += i.speed; return i.t < 1; });
+}
+
+function drawIons() {
+  const bw = Math.min(W*0.22, 160);
+  const bh = Math.min(H*0.45, 200);
+  const by = H*0.35;
+  const leftX = W/2 - W*0.22;
+  const rightX = W/2 + W*0.22 - bw;
+  const lx = leftX + bw*0.78, rx = rightX + bw*0.22;
+  const liquidY = by + bh * 0.65; // entry point submerged in liquid
+  const topY = by - 60; // peak of pipe arch
+
+  // Ion path follows the U-pipe: bottom-left → up left leg → across top → down right leg → bottom-right
+  // Parameterize as 3 segments
+  function ionPos(goRight, t) {
+    // Segment lengths (approximate, use geometric)
+    const legH = liquidY - topY; // height of each vertical leg
+    const spanW = rx - lx;
+    const totalLen = legH + spanW + legH;
+    const dist = t * totalLen;
+
+    if(goRight) {
+      // L→R: start at lx,liquidY → lx,topY → rx,topY → rx,liquidY
+      if(dist < legH) {
+        return { x: lx, y: liquidY - dist };
+      } else if(dist < legH + spanW) {
+        return { x: lx + (dist - legH), y: topY };
+      } else {
+        return { x: rx, y: topY + (dist - legH - spanW) };
+      }
+    } else {
+      // R→L
+      if(dist < legH) {
+        return { x: rx, y: liquidY - dist };
+      } else if(dist < legH + spanW) {
+        return { x: rx - (dist - legH), y: topY };
+      } else {
+        return { x: lx, y: topY + (dist - legH - spanW) };
+      }
+    }
+  }
+
+  ionAnim.forEach(ion => {
+    const pos = ionPos(ion.goRight, ion.t);
+    ctx2.fillStyle = ion.color;
+    ctx2.shadowColor = ion.color;
+    ctx2.shadowBlur = 6;
+    ctx2.font = 'bold 9px "Exo 2"';
+    ctx2.textAlign = 'center';
+    ctx2.fillText(ion.label, pos.x, pos.y);
+    ctx2.shadowBlur = 0;
+  });
+}
+
+function spawnBubbles(lx, rx, bw, by, bh) {
+  if(bubbleAnim.length < 20 && Math.random() < 0.2) {
+    const side = Math.random() > 0.5 ? 'left' : 'right';
+    const bx = side === 'left' ? lx+bw*0.5 : rx+bw*0.5;
+    bubbleAnim.push({ x:bx + (Math.random()-0.5)*20, y:by+bh*0.7, vy:-1.5-Math.random(), life:1, r:2+Math.random()*3 });
+  }
+  bubbleAnim = bubbleAnim.filter(b=>{ b.y-=b.vy; b.life-=0.02; return b.life>0; });
+}
+
+function drawBubbles() {
+  bubbleAnim.forEach(b=>{
+    ctx2.strokeStyle = `rgba(160,220,255,${b.life*0.6})`;
+    ctx2.lineWidth = 1;
+    ctx2.beginPath();
+    ctx2.arc(b.x, b.y, b.r, 0, Math.PI*2);
+    ctx2.stroke();
+  });
+}
+
+function drawLabel(x, y, text, color) {
+  ctx2.fillStyle = color;
+  ctx2.font = 'bold 12px "Orbitron"';
+  ctx2.textAlign = 'center';
+  ctx2.shadowColor = color;
+  ctx2.shadowBlur = 10;
+  ctx2.fillText(text, x, y);
+  ctx2.shadowBlur = 0;
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3500);
+}
+
+// ===== INIT COVER PARTICLES =====
+createParticles();
+</script>
+</body>
+</html>
